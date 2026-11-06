@@ -1,0 +1,359 @@
+/* ============================================================================
+ * ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Mobile `.APK` Responsive Stylesheet
+ * Supports Single Cartela & Split-Screen Dual Cartela Views + Secret Admin Mode
+ * ============================================================================ */
+:root {
+  --bg: #050914;
+  --card: #0f172a;
+  --gold: #facc15;
+  --emerald: #22c55e;
+  --crimson: #ef4444;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Nyala", "Noto Sans Ethiopic", "Segoe UI", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.m-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.m-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.m-logo {
+  width: 38px;
+  height: 38px;
+}
+
+.m-title {
+  font-size: 1.02rem;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.m-badge {
+  background: var(--gold);
+  color: #020617;
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+}
+
+.m-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.m-config-panel {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-row {
+  display: flex;
+  gap: 6px;
+}
+
+.m-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-field label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.m-input {
+  background: #020617;
+  color: var(--text);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: 100%;
+}
+
+.m-num-input {
+  text-align: center;
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+
+.m-win-banner {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.6);
+}
+
+.m-win-banner.not-yet {
+  background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+}
+
+.m-cartelas-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.m-cartela-card {
+  background: var(--card);
+  border: 2px solid rgba(250, 204, 21, 0.4);
+  border-radius: 14px;
+  padding: 8px;
+}
+
+.m-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.m-card-head strong {
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+
+.m-sig {
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-family: monospace;
+}
+
+.m-verify-btn {
+  background: linear-gradient(135deg, #facc15, #ca8a04);
+  color: #020617;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 900;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.m-bingo-letters,
+.m-bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+
+.m-bingo-letters {
+  margin-bottom: 5px;
+}
+
+.m-bingo-letters span {
+  background: var(--gold);
+  color: #020617;
+  text-align: center;
+  font-weight: 900;
+  padding: 4px 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.m-cell {
+  aspect-ratio: 1 / 0.88;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #f8fafc;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.m-cell.daubed {
+  background: radial-gradient(circle, #fef08a 0%, #eab308 70%, #a16207 100%);
+  color: #020617;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.7);
+}
+
+.m-cell.win-cell {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: #ffffff;
+  border: 2px solid #fef08a;
+}
+
+.m-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.m-btn-gold {
+  background: linear-gradient(135deg, #facc15, #ca8a04);
+  color: #020617;
+}
+
+.m-btn-emerald {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: #fff;
+}
+
+.m-btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* SECRET ADMIN MODAL */
+.m-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 14px;
+}
+
+.m-modal-backdrop.open {
+  display: flex;
+}
+
+.m-modal-box {
+  background: #0f172a;
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 460px;
+  padding: 16px;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.m-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.m-close-btn {
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+}
+
+.m-muted {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.m-admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-admin-form label {
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.m-full-btn {
+  width: 100%;
+  padding: 11px;
+  margin-top: 6px;
+}
+
+.m-admin-output {
+  margin-top: 12px;
+  border-top: 1px solid rgba(250, 204, 21, 0.3);
+  padding-top: 10px;
+}
+
+.m-key-box,
+.m-json-box {
+  background: #020617;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.m-key-box strong {
+  display: block;
+  font-size: 1.3rem;
+  color: var(--gold);
+  font-family: monospace;
+  margin: 6px 0;
+  letter-spacing: 1.5px;
+}
+
+.m-json-box pre {
+  text-align: left;
+  font-size: 0.72rem;
+  color: #86efac;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+
+.m-copy-btn {
+  width: 100%;
+}
+
+.m-modal-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}

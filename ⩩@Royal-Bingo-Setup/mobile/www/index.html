@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Mobile Player & Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- MOBILE TOP BAR (Tap Logo 27 times to unlock Secret Admin Wallet Generator!) -->
+  <header class="m-header">
+    <div class="m-brand" id="secretAdminLogoTrigger">
+      <img src="logo.svg" alt="Logo" class="m-logo" />
+      <div>
+        <h1 class="m-title">ሮያል ቢንጎ ፕሮ <span class="m-badge">500</span></h1>
+        <p class="m-sub" id="tapCounterHint">100% Offline Digital Cartela</p>
+      </div>
+    </div>
+    <div class="m-actions">
+      <button class="m-btn m-btn-outline" id="resetBoardBtn">🔄 ካርቴላ አጽዳ</button>
+    </div>
+  </header>
+
+  <!-- PLAYER CONFIG BAR (1 or 2 Cartelas, Pattern Selector, Stake Selector) -->
+  <section class="m-config-panel">
+    <div class="m-row">
+      <div class="m-field">
+        <label>ብዛት (Mode)</label>
+        <select id="cartelaModeSelect" class="m-input">
+          <option value="1">1 ካርቴላ (Single View)</option>
+          <option value="2">2 ካርቴላ በአንድ ጊዜ (Split-Screen)</option>
+        </select>
+      </div>
+      <div class="m-field">
+        <label>ካርቴላ #1 (1–500)</label>
+        <input type="number" id="mobileCartela1Input" min="1" max="500" value="1" class="m-input m-num-input" />
+      </div>
+      <div class="m-field" id="mobileCartela2Field" style="display:none;">
+        <label>ካርቴላ #2 (1–500)</label>
+        <input type="number" id="mobileCartela2Input" min="1" max="500" value="2" class="m-input m-num-input" />
+      </div>
+    </div>
+
+    <div class="m-row">
+      <div class="m-field">
+        <label>የዝግ አይነት (Winning Pattern)</label>
+        <select id="mobilePatternSelect" class="m-input"></select>
+      </div>
+      <div class="m-field m-stake-field">
+        <label>መግቢያ (ብር)</label>
+        <select id="mobileStakeSelect" class="m-input">
+          <option value="10">10 ብር</option>
+          <option value="20">20 ብር</option>
+          <option value="30" selected>30 ብር</option>
+          <option value="50">50 ብር</option>
+          <option value="100">100 ብር</option>
+          <option value="200">200 ብር</option>
+          <option value="500">500 ብር</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE BINGO WIN BANNER & SELF-VERIFICATION BUTTON -->
+  <div id="mobileWinAlertBanner" class="m-win-banner" style="display:none;"></div>
+
+  <!-- SPLIT-SCREEN / SINGLE CARTELA CONTAINER -->
+  <main id="mobileCartelasContainer" class="m-cartelas-wrapper">
+    <!-- Cartela #1 Card -->
+    <div class="m-cartela-card" id="mobileCard1">
+      <div class="m-card-head">
+        <span>ካርቴላ <strong id="card1TitleNum">#1</strong></span>
+        <span class="m-sig" id="card1Sig">SIG</span>
+        <button class="m-verify-btn" data-card="1">🏆 ዝግህን አረጋግጥ</button>
+      </div>
+      <div class="m-bingo-letters">
+        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+      </div>
+      <div id="mobileGrid1" class="m-bingo-grid"></div>
+    </div>
+
+    <!-- Cartela #2 Card (Shown in Split-Screen Dual Mode) -->
+    <div class="m-cartela-card" id="mobileCard2" style="display:none;">
+      <div class="m-card-head">
+        <span>ካርቴላ <strong id="card2TitleNum">#2</strong></span>
+        <span class="m-sig" id="card2Sig">SIG</span>
+        <button class="m-verify-btn" data-card="2">🏆 ዝግህን አረጋግጥ</button>
+      </div>
+      <div class="m-bingo-letters">
+        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+      </div>
+      <div id="mobileGrid2" class="m-bingo-grid"></div>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- SECRET OWNER ADMIN WALLET GENERATOR MODAL (UNLOCKED BY 27 LOGO TAPS!)  -->
+  <!-- ===================================================================== -->
+  <div class="m-modal-backdrop" id="adminPinModal">
+    <div class="m-modal-box">
+      <h3>🔐 የባለቤት ሚስጥራዊ Admin PIN ያስገቡ</h3>
+      <p class="m-muted">27 ጊዜ ነክተዋል! ወደ Admin Wallet Token Generator ለመግባት Master PIN ያስገቡ፦</p>
+      <input type="password" id="adminPinInput" placeholder="Master PIN (Default: 202627)" class="m-input m-pin-input" />
+      <div class="m-modal-btns">
+        <button class="m-btn m-btn-gold" id="unlockAdminBtn">ክፈት (Unlock Admin)</button>
+        <button class="m-btn m-btn-outline" id="cancelAdminPinBtn">ዝጋ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-modal-backdrop" id="adminGeneratorModal">
+    <div class="m-modal-box m-admin-box">
+      <div class="m-admin-header">
+        <h3>👑 Royal Bingo Pro — Admin Wallet Generator</h3>
+        <button class="m-close-btn" id="closeAdminGenBtn">✕</button>
+      </div>
+      <p class="m-muted">በስልክዎ ብቻ ለማንኛውም ገዢ (ሰቆጣም ሆነ የትም) የWallet Token መሙያ ኮድ ያመንጩ፦</p>
+
+      <div class="m-admin-form">
+        <label>1. የገዢው User ID (ለምሳሌ፦ <code>RB-SKT-4829</code>)</label>
+        <input type="text" id="adminBuyerUserId" value="RB-SKT-4829" class="m-input" />
+
+        <label>2. የገዢው Top-Up Sequence # (ለ1ኛ ዙር = <code>1</code>፣ ለ2ኛ = <code>2</code>...)</label>
+        <input type="number" id="adminBuyerSeq" value="1" min="1" class="m-input" />
+
+        <label>3. የሚሞላለት Wallet Token መጠን (1,000,000 = 10,000 ብር)</label>
+        <select id="adminTokenPreset" class="m-input">
+          <option value="1000000" selected>1,000,000 Tokens (10,000 ETB)</option>
+          <option value="500000">500,000 Tokens (5,000 ETB)</option>
+          <option value="250000">250,000 Tokens (2,500 ETB)</option>
+          <option value="100000">100,000 Tokens (1,000 ETB)</option>
+          <option value="2000000">2,000,000 Tokens (20,000 ETB)</option>
+          <option value="5000000">5,000,000 Tokens (50,000 ETB)</option>
+        </select>
+
+        <label>ወይም Custom Token መጠን (በ1,000 ብዜት)፦</label>
+        <input type="number" id="adminCustomTokens" value="1000000" step="1000" class="m-input" />
+
+        <button class="m-btn m-btn-gold m-full-btn" id="generateSignedKeyBtn">⚡ ባለ 16-ፊደል ኮድ እና Online JSON አመንጭ</button>
+      </div>
+
+      <div id="adminGeneratedOutput" class="m-admin-output" style="display:none;">
+        <div class="m-key-box">
+          <span>ለገዢው በSMS / Telegram የሚላክ ባለ 16-ፊደል ኮድ፦</span>
+          <strong id="generated16KeyDisplay">RBPX-4829-1M00-XXXX</strong>
+          <button class="m-btn m-btn-emerald m-copy-btn" id="copySmsKeyBtn">📋 የSMS ኮድ ኮፒ አድርግ</button>
+        </div>
+
+        <div class="m-json-box">
+          <span>ለOnline 1-Click Sync (`wallets.json` ውስጥ የሚጨመር)፦</span>
+          <pre id="generatedJsonSnippet"></pre>
+          <button class="m-btn m-btn-outline m-copy-btn" id="copyJsonSnippetBtn">📋 JSON ኮፒ አድርግ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="royal-bingo-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
