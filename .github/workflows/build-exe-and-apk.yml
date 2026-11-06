@@ -1,0 +1,257 @@
+name: Build Royal Bingo Pro 500 (.EXE + .APK + .AAB) & Publish Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release Version Tag (e.g. v1.0.0)"
+        required: false
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  # ============================================================================
+  # JOB 0: AUTO-UNPACK ANY .ZIP FILE UPLOADED FROM MOBILE PHONE
+  # ============================================================================
+  unpack-mobile-zip:
+    name: "Job 0 — Auto-Extract ZIP into Folders (If Uploaded via Phone)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find and Extract Any Uploaded .zip File into Folders
+        run: |
+          echo "Checking repository files..."
+          ls -la
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            echo "Found ZIP file: $ZIP_FILE — extracting all project folders..."
+            unzip -o "$ZIP_FILE" -x ".github/*"
+            git config user.name "RoyalCraft Auto-Unpacker"
+            git config user.email "bot@royalcraft.et"
+            git add .
+            git commit -m "Auto-extract Royal Bingo Pro 500 project folders from ZIP" || true
+            git push origin HEAD:main || true
+          fi
+          if [ ! -f "scripts/generate_icons.py" ]; then
+            echo "❌ ስህተት (ERROR): RoyalBingoPro_GitHub_Repo_v1.0.0.zip ፋይል በዚህ Repository ውስጥ ገና አልተጫነም! እባክዎ Add file -> Upload files ብለው የ.zip ፋይሉን ይጫኑ!"
+            exit 1
+          fi
+
+  # ============================================================================
+  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (NSIS - ZERO ANTIVIRUS FALSE POSITIVES)
+  # ============================================================================
+  build-windows-exe:
+    name: "Job 1 — Build Windows .EXE (NSIS + Offline Amharic Neural Voices)"
+    needs: [unpack-mobile-zip]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Extract ZIP Locally if Needed
+        shell: bash
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            unzip -o "$ZIP_FILE"
+          fi
+
+      - name: Setup Python 3.11 for Amharic Voice & Icon Generation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Voice & Icon Dependencies (edge-tts + Pillow)
+        run: |
+          python -m pip install --upgrade pip
+          pip install edge-tts Pillow
+
+      - name: Generate Zero-Copyright Multi-Resolution Icons (.ico & .png)
+        run: python scripts/generate_icons.py
+
+      - name: Generate 75 Amharic Neural Voices (B:1 to O:75 + Status Calls)
+        run: python scripts/build_amharic_voices.py
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Node & Electron-Builder Dependencies
+        run: npm install
+
+      - name: Build Clean Windows NSIS Installer (RoyalBingoPro_Setup.exe)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npx electron-builder --win nsis --x64
+          if (Test-Path "dist/RoyalBingoPro_Setup.exe") {
+            Copy-Item "dist/RoyalBingoPro_Setup.exe" "dist/RoyalBingoPro_Setup_v1.0.0.exe"
+          }
+
+      - name: Upload Windows .EXE Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalBingoPro-Windows-EXE
+          path: |
+            dist/RoyalBingoPro_Setup.exe
+            dist/RoyalBingoPro_Setup_v1.0.0.exe
+          if-no-files-found: error
+
+  # ============================================================================
+  # JOB 2: BUILD ANDROID .APK & .AAB (500-CARTELA PLAYER + 27-TAP SECRET ADMIN)
+  # ============================================================================
+  build-android-apk:
+    name: "Job 2 — Build Signed Android .APK & .AAB (500-Cartela + Admin Keygen)"
+    needs: [unpack-mobile-zip]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Extract ZIP Locally if Needed
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            unzip -o "$ZIP_FILE"
+          fi
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate Icons & Offline Amharic Voices for Mobile APK
+        run: |
+          pip install edge-tts Pillow
+          python scripts/generate_icons.py
+          python scripts/build_amharic_voices.py
+          cp shared/royal-bingo-core.js mobile/www/royal-bingo-core.js
+          cp assets/logo.svg mobile/www/logo.svg
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Java JDK 17 for Android Gradle Build
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Initialize Capacitor Android Project (`com.royalcraft.habeshabingo500`)
+        run: |
+          npm install
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx cap copy android
+          npx cap sync android
+
+      - name: Prepare Release Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/royal-bingo-release.keystore
+          else
+            keytool -genkeypair -v \
+              -keystore android/app/royal-bingo-release.keystore \
+              -alias royalbingo \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 18250 \
+              -storepass "RoyalBingo2026!" \
+              -keypass "RoyalBingo2026!" \
+              -dname "CN=RoyalCraft Software PLC, OU=Bingo Division, O=RoyalCraft, L=Addis Ababa, ST=Addis Ababa, C=ET"
+          fi
+
+      - name: Build Signed Release .APK and .AAB
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEYSTORE_PASSWORD || 'RoyalBingo2026!' }}
+          K_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEY_ALIAS || 'royalbingo' }}
+          K_PASS: ${{ secrets.ANDROID_KEY_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD || 'RoyalBingo2026!' }}
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease \
+            -Pandroid.injected.signing.store.file=$PWD/app/royal-bingo-release.keystore \
+            -Pandroid.injected.signing.store.password="$KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$K_ALIAS" \
+            -Pandroid.injected.signing.key.password="$K_PASS"
+
+          mkdir -p ../dist-android
+          cp app/build/outputs/apk/release/*.apk ../dist-android/RoyalBingoPro_500Cartela_v1.0.0.apk
+          cp app/build/outputs/bundle/release/*.aab ../dist-android/RoyalBingoPro_500Cartela_v1.0.0.aab
+
+      - name: Upload Android .APK and .AAB Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalBingoPro-Android-APK-AAB
+          path: |
+            dist-android/RoyalBingoPro_500Cartela_v1.0.0.apk
+            dist-android/RoyalBingoPro_500Cartela_v1.0.0.aab
+          if-no-files-found: error
+
+  # ============================================================================
+  # JOB 3: PUBLISH DIRECT DOWNLOAD RELEASE (.EXE + .APK + .AAB) ON GITHUB RELEASES
+  # ============================================================================
+  publish-release:
+    name: "Job 3 — Publish Direct Download Links to GitHub Releases"
+    needs: [build-windows-exe, build-android-apk]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Built Windows .EXE Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: RoyalBingoPro-Windows-EXE
+          path: release-assets
+
+      - name: Download Built Android .APK & .AAB Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: RoyalBingoPro-Android-APK-AAB
+          path: release-assets
+
+      - name: Create / Update GitHub Release with Direct Download Links
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag || 'v1.0.0' }}
+          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release"
+          body: |
+            ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Commercial Bingo Suite
+            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE`)**: `RoyalBingoPro_Setup.exe` / `RoyalBingoPro_Setup_v1.0.0.exe`
+            - **📱 የስልክ 500-ካርቴላ እና Admin መተግበሪያ (`.APK`)**: `RoyalBingoPro_500Cartela_v1.0.0.apk`
+            - **📦 Google Play Bundle (`.AAB`)**: `RoyalBingoPro_500Cartela_v1.0.0.aab`
+            - **📞 Wallet Top-Up Contact**: `+251 925432016` / `@OneGBEthiopia` (`CBE: 1000212746367 | Telebirr: 0925432016`)
+          files: |
+            release-assets/RoyalBingoPro_Setup.exe
+            release-assets/RoyalBingoPro_Setup_v1.0.0.exe
+            release-assets/RoyalBingoPro_500Cartela_v1.0.0.apk
+            release-assets/RoyalBingoPro_500Cartela_v1.0.0.aab
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
