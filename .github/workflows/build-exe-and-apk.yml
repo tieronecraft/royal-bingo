@@ -4,71 +4,42 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*"
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: "Release Version Tag (e.g. v1.0.0)"
-        required: false
-        default: "v1.0.0"
 
 permissions:
   contents: write
 
 jobs:
   # ============================================================================
-  # JOB 0: AUTO-UNPACK ANY .ZIP FILE UPLOADED FROM MOBILE PHONE
-  # ============================================================================
-  unpack-mobile-zip:
-    name: "Job 0 — Auto-Extract ZIP into Folders (If Uploaded via Phone)"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Find and Extract Any Uploaded .zip File into Folders
-        run: |
-          echo "Checking repository files..."
-          ls -la
-          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
-          if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
-            echo "Found ZIP file: $ZIP_FILE — extracting all project folders..."
-            unzip -o "$ZIP_FILE" -x ".github/*"
-            git config user.name "RoyalCraft Auto-Unpacker"
-            git config user.email "bot@royalcraft.et"
-            git add .
-            git commit -m "Auto-extract Royal Bingo Pro 500 project folders from ZIP" || true
-            git push origin HEAD:main || true
-          fi
-          if [ ! -f "scripts/generate_icons.py" ]; then
-            echo "❌ ስህተት (ERROR): RoyalBingoPro_GitHub_Repo_v1.0.0.zip ፋይል በዚህ Repository ውስጥ ገና አልተጫነም! እባክዎ Add file -> Upload files ብለው የ.zip ፋይሉን ይጫኑ!"
-            exit 1
-          fi
-
-  # ============================================================================
   # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (NSIS - ZERO ANTIVIRUS FALSE POSITIVES)
   # ============================================================================
   build-windows-exe:
     name: "Job 1 — Build Windows .EXE (NSIS + Offline Amharic Neural Voices)"
-    needs: [unpack-mobile-zip]
     runs-on: windows-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Extract ZIP Locally if Needed
+      - name: Locate or Extract Project Files Automatically
         shell: bash
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          echo "Inspecting repository structure..."
+          ls -la
+          # 1. If a .zip file exists and scripts/generate_icons.py is not in root, unzip it
+          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
           if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            echo "Extracting $ZIP_FILE..."
             unzip -o "$ZIP_FILE"
           fi
+          # 2. If files are nested inside a subfolder (like #@Royal-Bingo-Setup), move them to root
+          ICON_SCRIPT=$(find . -maxdepth 3 -name "generate_icons.py" | head -n 1)
+          if [ -n "$ICON_SCRIPT" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            SUBDIR=$(dirname $(dirname "$ICON_SCRIPT"))
+            echo "Moving project files from $SUBDIR to repository root..."
+            cp -r "$SUBDIR"/* .
+          fi
+          ls -la
 
       - name: Setup Python 3.11 for Amharic Voice & Icon Generation
         uses: actions/setup-python@v5
@@ -117,21 +88,29 @@ jobs:
   # ============================================================================
   build-android-apk:
     name: "Job 2 — Build Signed Android .APK & .AAB (500-Cartela + Admin Keygen)"
-    needs: [unpack-mobile-zip]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Extract ZIP Locally if Needed
+      - name: Locate or Extract Project Files Automatically
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
           if [ -n "$ZIP_FILE" ] && [ ! -f "scripts/generate_icons.py" ]; then
             unzip -o "$ZIP_FILE"
           fi
+          ICON_SCRIPT=$(find . -maxdepth 3 -name "generate_icons.py" | head -n 1)
+          if [ -n "$ICON_SCRIPT" ] && [ ! -f "scripts/generate_icons.py" ]; then
+            SUBDIR=$(dirname $(dirname "$ICON_SCRIPT"))
+            cp -r "$SUBDIR"/* .
+          fi
+          # Also push clean structure back to main so GitHub Pages works cleanly
+          git config user.name "RoyalCraft Builder"
+          git config user.email "bot@royalcraft.et"
+          git add .
+          git commit -m "Normalize Royal Bingo Pro 500 root folder structure" || true
+          git push origin HEAD:main || true
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
@@ -238,8 +217,8 @@ jobs:
       - name: Create / Update GitHub Release with Direct Download Links
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.release_tag || 'v1.0.0' }}
-          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release"
+          tag_name: v1.0.0
+          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release v1.0.0"
           body: |
             ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Commercial Bingo Suite
             - **💻 የኮምፒውተር ሶፍትዌር (`.EXE`)**: `RoyalBingoPro_Setup.exe` / `RoyalBingoPro_Setup_v1.0.0.exe`
