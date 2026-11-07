@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   # ============================================================================
-  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (ALREADY VERIFIED GREEN ✓)
+  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (NSIS + PRE-BUNDLED AMHARIC VOICES)
   # ============================================================================
   build-windows-exe:
     name: "Job 1 — Build Windows .EXE (NSIS + Offline Amharic Neural Voices)"
@@ -21,32 +21,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Unpack ZIP & Normalize Folders (Bash)
-        shell: bash
-        run: |
-          set -e
-          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
-          if [ -n "$ZIP_FILE" ] && [ ! -f "package.json" ]; then
-            unzip -o "$ZIP_FILE"
-          fi
-          PKG_FILE=$(find . -maxdepth 3 -name "package.json" | grep -v "node_modules" | head -n 1)
-          if [ -n "$PKG_FILE" ] && [ ! -f "package.json" ]; then
-            SUBDIR=$(dirname "$PKG_FILE")
-            cp -r "$SUBDIR"/* .
-          fi
-
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Generate Icons & Fault-Tolerant Amharic Voices
+      - name: Generate Multi-Resolution Icons
         shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install Pillow edge-tts
           python scripts/generate_icons.py || true
-          python scripts/build_amharic_voices.py || echo "Used synthesized fallback for remaining voices"
 
       - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v4
@@ -75,7 +60,7 @@ jobs:
             dist/RoyalBingoPro_Setup_v1.0.0.exe
 
   # ============================================================================
-  # JOB 2: BUILD SIGNED ANDROID .APK & .AAB (USES PRE-INSTALLED UBUNTU ANDROID SDK)
+  # JOB 2: BUILD SIGNED ANDROID .APK & .AAB (PRE-INSTALLED ANDROID SDK + JAVA 21)
   # ============================================================================
   build-android-apk:
     name: "Job 2 — Build Signed Android .APK & .AAB (500-Cartela + Admin Keygen)"
@@ -85,29 +70,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Unpack ZIP & Normalize Folders
-        run: |
-          set -e
-          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
-          if [ -n "$ZIP_FILE" ] && [ ! -f "package.json" ]; then
-            unzip -o "$ZIP_FILE"
-          fi
-          PKG_FILE=$(find . -maxdepth 3 -name "package.json" | grep -v "node_modules" | head -n 1)
-          if [ -n "$PKG_FILE" ] && [ ! -f "package.json" ]; then
-            SUBDIR=$(dirname "$PKG_FILE")
-            cp -r "$SUBDIR"/* .
-          fi
-
-      - name: Setup Python 3.11 & Prepare Mobile Assets
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Build Mobile Icons & Voices
+      - name: Prepare Mobile Assets
         run: |
           pip install Pillow edge-tts
           python scripts/generate_icons.py || true
-          python scripts/build_amharic_voices.py || true
           mkdir -p mobile/www
           cp shared/royal-bingo-core.js mobile/www/royal-bingo-core.js
           cp assets/logo.svg mobile/www/logo.svg
@@ -123,14 +94,13 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Configure Pre-Installed Android SDK Licenses & Build Signed .APK + .AAB
+      - name: Build Signed Android .APK + .AAB
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           set -e
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export ANDROID_SDK_ROOT="$ANDROID_HOME"
-          echo "Using pre-installed ANDROID_HOME=$ANDROID_HOME"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
 
           npm install --no-audit --no-fund
@@ -138,7 +108,7 @@ jobs:
           npx cap add android
           npx cap sync android
 
-          # Prepare Production Keystore
+          # Production Keystore
           rm -f android/app/royal-bingo-release.keystore
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | tr -d ' \t\n\r' | base64 -d > android/app/royal-bingo-release.keystore || true
@@ -203,11 +173,11 @@ jobs:
       - name: Create / Update GitHub Release with Direct Download Links
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release v1.0.0"
+          tag_name: v2.0.0
+          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release v2.0.0"
           body: |
-            ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Commercial Bingo Suite
-            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE`)**: `RoyalBingoPro_Setup.exe` / `RoyalBingoPro_Setup_v1.0.0.exe`
+            ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Commercial Bingo Suite v2.0
+            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE`)**: `RoyalBingoPro_Setup.exe`
             - **📱 የስልክ 500-ካርቴላ እና Admin መተግበሪያ (`.APK`)**: `RoyalBingoPro_500Cartela_v1.0.0.apk`
             - **📦 Google Play Bundle (`.AAB`)**: `RoyalBingoPro_500Cartela_v1.0.0.aab`
             - **📞 Wallet Top-Up Contact**: `+251 925432016` / `@OneGBEthiopia` (`CBE: 1000212746367 | Telebirr: 0925432016`)
@@ -220,3 +190,4 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
