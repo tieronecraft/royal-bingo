@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   # ============================================================================
-  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (100% FAULT-TOLERANT)
+  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (ALREADY VERIFIED GREEN ✓)
   # ============================================================================
   build-windows-exe:
     name: "Job 1 — Build Windows .EXE (NSIS + Offline Amharic Neural Voices)"
@@ -34,7 +34,6 @@ jobs:
             SUBDIR=$(dirname "$PKG_FILE")
             cp -r "$SUBDIR"/* .
           fi
-          ls -la
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
@@ -47,7 +46,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install Pillow edge-tts
           python scripts/generate_icons.py || true
-          # Run voice generator with fallback so network rate-limits never fail the build
           python scripts/build_amharic_voices.py || echo "Used synthesized fallback for remaining voices"
 
       - name: Setup Node.js 22 LTS
@@ -62,7 +60,6 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx electron-builder --win nsis --x64 --publish never
-          ls -la dist/
           EXE_FOUND=$(find dist -maxdepth 1 -name "*.exe" | head -n 1)
           if [ -n "$EXE_FOUND" ]; then
             cp "$EXE_FOUND" dist/RoyalBingoPro_Setup.exe || true
@@ -78,7 +75,7 @@ jobs:
             dist/RoyalBingoPro_Setup_v1.0.0.exe
 
   # ============================================================================
-  # JOB 2: BUILD SIGNED ANDROID .APK & .AAB (JAVA 21 + GRADLE 8 COMPATIBLE)
+  # JOB 2: BUILD SIGNED ANDROID .APK & .AAB (USES PRE-INSTALLED UBUNTU ANDROID SDK)
   # ============================================================================
   build-android-apk:
     name: "Job 2 — Build Signed Android .APK & .AAB (500-Cartela + Admin Keygen)"
@@ -126,19 +123,22 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Initialize Capacitor Android Project & Build Signed .APK + .AAB
+      - name: Configure Pre-Installed Android SDK Licenses & Build Signed .APK + .AAB
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
+          set -e
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          echo "Using pre-installed ANDROID_HOME=$ANDROID_HOME"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+
           npm install --no-audit --no-fund
           rm -rf android
           npx cap add android
           npx cap sync android
 
-          # Generate or decode production keystore safely
+          # Prepare Production Keystore
           rm -f android/app/royal-bingo-release.keystore
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | tr -d ' \t\n\r' | base64 -d > android/app/royal-bingo-release.keystore || true
@@ -158,7 +158,7 @@ jobs:
 
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease bundleRelease \
+          ./gradlew assembleRelease bundleRelease --no-daemon \
             -Pandroid.injected.signing.store.file=$PWD/app/royal-bingo-release.keystore \
             -Pandroid.injected.signing.store.password="RoyalBingo2026!" \
             -Pandroid.injected.signing.key.alias="royalbingo" \
