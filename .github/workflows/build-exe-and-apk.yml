@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   # ============================================================================
-  # JOB 1: BUILD WINDOWS DESKTOP .EXE v2.0.0 (DIRECTLY FROM v2.0.0.ZIP)
+  # JOB 1: BUILD WINDOWS DESKTOP .EXE v2.0.0
   # ============================================================================
   build-windows-exe:
     name: "Job 1 — Build Windows .EXE v2.0.0 (100% Amharic + PIN Lock)"
@@ -21,28 +21,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Force Extract ONLY v2.0.0 ZIP & Clean Old v1.0.0 Files
+      - name: Force Extract v2.0 ZIP Over Everything
         shell: bash
         run: |
           set -e
-          echo "Cleaning any legacy v1.0.0 folders..."
-          rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup"
-          rm -f *v1.0.0*.zip
-          if [ -f "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" ]; then
-            echo "Extracting RoyalBingoPro_GitHub_Repo_v2.0.0.zip directly into workspace..."
-            unzip -o "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" -x ".github/*"
+          rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup" *v1.0.0*.zip
+          V2_ZIP=$(find . -maxdepth 2 -iname "*v2*.zip" | head -n 1)
+          echo "Found v2 ZIP: $V2_ZIP"
+          if [ -n "$V2_ZIP" ]; then
+            unzip -o "$V2_ZIP" -x ".github/*"
           fi
-          ls -la
+          # Add cache-buster to index.html script/style tags
+          sed -i 's/styles\.css/styles.css?v=2.0.2/g' desktop/renderer/index.html || true
+          sed -i 's/app\.js/app.js?v=2.0.2/g' desktop/renderer/index.html || true
+          sed -i 's/royal-bingo-core\.js/royal-bingo-core.js?v=2.0.2/g' desktop/renderer/index.html || true
 
-      - name: Setup Python 3.11 & Generate Multi-Resolution Icons
+      - name: Setup Python 3.11 & Build Icons
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Build Icons
+      - name: Generate Icons
         shell: bash
         run: |
-          python -m pip install --upgrade pip
           pip install Pillow
           python scripts/generate_icons.py || true
 
@@ -73,37 +74,47 @@ jobs:
             dist/RoyalBingoPro_Setup_v2.0.0.exe
 
   # ============================================================================
-  # JOB 2: BUILD ANDROID .APK v2.0.0 & DEPLOY LIVE TABLET SIMULATOR TO GITHUB PAGES
+  # JOB 2: BUILD ANDROID .APK v2.0.0 & FORCE-REFRESH TABLET WEB SIMULATOR
   # ============================================================================
   build-android-apk:
-    name: "Job 2 — Build Android .APK v2.0.0 & Deploy Tablet Web Simulator"
+    name: "Job 2 — Build Android .APK v2.0.0 & Refresh Tablet Web Simulator"
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Force Extract ONLY v2.0.0 ZIP & Push Clean v2.0 Files for Tablet Web Simulator
+      - name: Force Extract v2.0 ZIP & Push Cache-Busted v2.0 Files to GitHub Pages
         run: |
           set -e
           git rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup" *v1.0.0*.zip 2>/dev/null || true
           rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup" *v1.0.0*.zip
-          if [ -f "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" ]; then
-            echo "Unpacking RoyalBingoPro_GitHub_Repo_v2.0.0.zip..."
-            unzip -o "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" -x ".github/*"
+          V2_ZIP=$(find . -maxdepth 2 -iname "*v2*.zip" | head -n 1)
+          echo "Found v2 ZIP: $V2_ZIP"
+          if [ -n "$V2_ZIP" ]; then
+            unzip -o "$V2_ZIP" -x ".github/*"
+            git rm -f "$V2_ZIP" 2>/dev/null || rm -f "$V2_ZIP"
           fi
           mkdir -p mobile/www
           cp shared/royal-bingo-core.js mobile/www/royal-bingo-core.js
           cp assets/logo.svg mobile/www/logo.svg
 
-          # Create a clean root index.html so https://tieronecraft.github.io/royal-bingo/ opens the v2.0 Launchpad!
+          # Force browser cache invalidation on tablet Chrome (?v=2.0.2)
+          sed -i 's/styles\.css/styles.css?v=2.0.2/g' desktop/renderer/index.html || true
+          sed -i 's/app\.js/app.js?v=2.0.2/g' desktop/renderer/index.html || true
+          sed -i 's/royal-bingo-core\.js/royal-bingo-core.js?v=2.0.2/g' desktop/renderer/index.html || true
+          sed -i 's/styles\.css/styles.css?v=2.0.2/g' mobile/www/index.html || true
+          sed -i 's/app\.js/app.js?v=2.0.2/g' mobile/www/index.html || true
+          sed -i 's/royal-bingo-core\.js/royal-bingo-core.js?v=2.0.2/g' mobile/www/index.html || true
+
           cat << 'EOF' > index.html
           <!DOCTYPE html>
           <html lang="am">
           <head>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500 — v2.0)</title>
+            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500 — v2.0.2)</title>
             <style>
               body { background:#050914; color:#fff; font-family:sans-serif; text-align:center; padding:30px 16px; }
               .card { max-width:620px; margin:0 auto; background:#0f172a; border:2px solid #facc15; border-radius:18px; padding:24px; }
@@ -117,10 +128,10 @@ jobs:
           </head>
           <body>
             <div class="card">
-              <h1>👑 ሮያል ቢንጎ ፕሮ (v2.0 Enterprise)</h1>
+              <h1>👑 ሮያል ቢንጎ ፕሮ (v2.0.2 Enterprise)</h1>
               <p>በታብሌትዎ ወይም በስልክዎ ወዲያውኑ ለመሞከር ወይም ለማውረድ ከታች ይምረጡ፦</p>
-              <a class="btn btn-sim" href="./desktop/renderer/index.html">🖥️ 1. የኮምፒውተሩን (.EXE) ቢንጎ አሁኑኑ በታብሌትዎ ይክፈቱና ይሞክሩ!</a>
-              <a class="btn btn-mob" href="./mobile/www/index.html">📱 2. የስልኩን 500-ካርቴላ እና 27-Tap Admin በብራውዘር ይሞክሩ!</a>
+              <a class="btn btn-sim" href="./desktop/renderer/index.html?v=2.0.2">🖥️ 1. የኮምፒውተሩን (.EXE v2.0) ቢንጎ አሁኑኑ በታብሌትዎ ይክፈቱ!</a>
+              <a class="btn btn-mob" href="./mobile/www/index.html?v=2.0.2">📱 2. የስልኩን 500-ካርቴላ (v2.0) እና 27-Tap Admin በብራውዘር ይሞክሩ!</a>
               <hr style="border-color:rgba(250,204,21,0.3); margin:20px 0;" />
               <a class="btn btn-exe" href="https://github.com/tieronecraft/royal-bingo/releases/latest/download/RoyalBingoPro_Setup_v2.0.0.exe">💻 የኮምፒውተር ሶፍትዌር አውርድ (RoyalBingoPro_Setup_v2.0.0.exe)</a>
               <a class="btn btn-apk" href="https://github.com/tieronecraft/royal-bingo/releases/latest/download/RoyalBingoPro_500Cartela_v2.0.0.apk">📲 የስልክ መተግበሪያ አውርድ (RoyalBingoPro_500Cartela_v2.0.0.apk)</a>
@@ -132,8 +143,10 @@ jobs:
           git config user.name "RoyalCraft v2 Builder"
           git config user.email "bot@royalcraft.et"
           git add -A
-          git commit -m "Deploy unpacked v2.0.0 files to root for GitHub Pages [skip ci]" || true
-          git push origin HEAD:main || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Unpack v2.0.2 files and bust browser cache for GitHub Pages"
+            git push origin HEAD:main || true
+          fi
 
       - name: Setup Python 3.11 & Generate Icons
         uses: actions/setup-python@v5
@@ -239,7 +252,7 @@ jobs:
           name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Enterprise Release v2.0.0"
           body: |
             ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Enterprise Edition v2.0.0
-            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE` v2.0.0)**: `RoyalBingoPro_Setup_v2.0.0.exe` / `RoyalBingoPro_Setup.exe`
+            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE` v2.0.0)**: `RoyalBingoPro_Setup_v2.0.0.exe`
             - **📱 የስልክ 500-ካርቴላ እና Admin CRM መተግበሪያ (`.APK` v2.0.0)**: `RoyalBingoPro_500Cartela_v2.0.0.apk`
             - **📦 Google Play Bundle (`.AAB` v2.0.0)**: `RoyalBingoPro_500Cartela_v2.0.0.aab`
           files: |
