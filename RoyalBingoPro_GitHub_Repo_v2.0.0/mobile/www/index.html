@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — ተጫዋችና አድሚን</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- MOBILE TOP BAR (Logo 27 taps unlocks Admin mode) -->
+  <header class="m-header">
+    <div class="m-brand" id="secretAdminLogoTrigger">
+      <img src="logo.svg" alt="ሮያል ቢንጎ ሎጎ" class="m-logo" />
+      <div>
+        <h1 class="m-title">ሮያል ቢንጎ ፕሮ <span class="m-badge">500</span></h1>
+        <p class="m-sub" id="tapCounterHint">የተጫዋች ዲጂታል ካርቴላ</p>
+      </div>
+    </div>
+    <div class="m-actions">
+      <button class="m-btn m-btn-outline" id="resetBoardBtn">🔄 ካርቴላ አጽዳ</button>
+    </div>
+  </header>
+
+  <!-- PLAYER CONFIG PANEL -->
+  <section class="m-config-panel">
+    <div class="m-row">
+      <div class="m-field">
+        <label>የካርቴላ እይታ ብዛት</label>
+        <select id="cartelaModeSelect" class="m-input">
+          <option value="1">1 ካርቴላ (ነጠላ እይታ)</option>
+          <option value="2">2 ካርቴላ በአንድ ጊዜ (Split-Screen)</option>
+        </select>
+      </div>
+      <div class="m-field">
+        <label>ካርቴላ #1 (#1–500)</label>
+        <input type="number" id="mobileCartela1Input" min="1" max="500" value="1" class="m-input m-num-input" />
+      </div>
+      <div class="m-field" id="mobileCartela2Field" style="display:none;">
+        <label>ካርቴላ #2 (#1–500)</label>
+        <input type="number" id="mobileCartela2Input" min="1" max="500" value="2" class="m-input m-num-input" />
+      </div>
+    </div>
+
+    <div class="m-row">
+      <div class="m-field">
+        <label>የዝግ አይነት</label>
+        <select id="mobilePatternSelect" class="m-input"></select>
+      </div>
+      <div class="m-field">
+        <label>የ1 ካርቴላ ዋጋ (ብር)</label>
+        <div class="m-stake-input-wrap">
+          <select id="mobileStakeSelect" class="m-input m-stake-select">
+            <option value="10">10 ብር</option>
+            <option value="20">20 ብር</option>
+            <option value="30" selected>30 ብር</option>
+            <option value="50">50 ብር</option>
+            <option value="100">100 ብር</option>
+            <option value="200">200 ብር</option>
+            <option value="500">500 ብር</option>
+            <option value="custom">ሌላ (Custom ብር)</option>
+          </select>
+          <input type="number" id="mobileCustomStakeInput" placeholder="ብር" class="m-input m-custom-stake" style="display:none;" />
+        </div>
+      </div>
+      <div class="m-field">
+        <label>የዙሩ ተጫዋቾች ብዛት</label>
+        <input type="number" id="mobilePlayerCountInput" min="2" value="20" class="m-input m-num-input" placeholder="ተጫዋች" />
+      </div>
+    </div>
+
+    <!-- Live Calculated Pool Strip for Player -->
+    <div class="m-player-calc-strip">
+      <span>ጠቅላላ፦ <strong id="mPlayerGrossDisplay">600 ብር</strong></span>
+      <span>የአጫዋች (25%)፦ <strong id="mPlayerCutDisplay">150 ብር</strong></span>
+      <span class="m-gold-text">ደራሽ (75%)፦ <strong id="mPlayerNetDisplay">450 ብር</strong></span>
+    </div>
+  </section>
+
+  <!-- LIVE WIN / STATUS BANNER -->
+  <div id="mobileWinAlertBanner" class="m-win-banner" style="display:none;"></div>
+
+  <!-- CARTELAS CONTAINER (RESPONSIVE VIEWPORT FIT) -->
+  <main id="mobileCartelasContainer" class="m-cartelas-wrapper">
+    <!-- Cartela #1 Card -->
+    <div class="m-cartela-card" id="mobileCard1">
+      <div class="m-card-head">
+        <span>ካርቴላ <strong id="card1TitleNum">#1</strong></span>
+        <span class="m-sig" id="card1Sig">SIG</span>
+        <button class="m-verify-btn" data-card="1">🏆 ዝግህን አረጋግጥ</button>
+      </div>
+      <div class="m-bingo-letters">
+        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+      </div>
+      <div id="mobileGrid1" class="m-bingo-grid"></div>
+    </div>
+
+    <!-- Cartela #2 Card (Split-Screen Mode) -->
+    <div class="m-cartela-card" id="mobileCard2" style="display:none;">
+      <div class="m-card-head">
+        <span>ካርቴላ <strong id="card2TitleNum">#2</strong></span>
+        <span class="m-sig" id="card2Sig">SIG</span>
+        <button class="m-verify-btn" data-card="2">🏆 ዝግህን አረጋግጥ</button>
+      </div>
+      <div class="m-bingo-letters">
+        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+      </div>
+      <div id="mobileGrid2" class="m-bingo-grid"></div>
+    </div>
+  </main>
+
+  <!-- COLLAPSIBLE PLAYER ROUNDS AUDIT LOG -->
+  <section class="m-audit-container">
+    <div class="m-audit-header" id="toggleMobileAuditBtn">
+      <span>📊 የጨዋታ ዙሮች ማስታወሻና ትርፍ/ኪሳራ ሰንጠረዥ</span>
+      <span id="mAuditArrow">▼</span>
+    </div>
+    <div id="mobileAuditContent" class="m-audit-content" style="display:none;">
+      <div class="m-audit-actions">
+        <button class="m-btn m-btn-outline m-btn-sm" id="mClearAuditBtn">🗑️ ሪፖርት አጽዳ</button>
+      </div>
+      <table class="m-table">
+        <thead>
+          <tr>
+            <th>ዙር</th>
+            <th>ተጫዋች</th>
+            <th>የ1 ካርቴላ</th>
+            <th>ጠቅላላ</th>
+            <th>ተቆራጭ (25%)</th>
+            <th>ደራሽ (75%)</th>
+            <th>ውጤት</th>
+          </tr>
+        </thead>
+        <tbody id="mAuditTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SECRET ADMIN GENERATOR & CRM MODAL (27 LOGO TAPS)                      -->
+  <!-- ===================================================================== -->
+  <div class="m-modal-backdrop" id="adminPinModal">
+    <div class="m-modal-box">
+      <h3>🔐 የባለቤት ሚስጥራዊ Admin PIN ያስገቡ</h3>
+      <p class="m-muted">27 ጊዜ ነክተዋል! ወደ Admin Wallet Generator እና የደንበኞች መዝገብ (CRM) ለመግባት Master PIN ያስገቡ፦</p>
+      <input type="password" id="adminPinInput" placeholder="Master PIN (202627)" class="m-input m-pin-input" />
+      <div class="m-modal-btns">
+        <button class="m-btn m-btn-gold" id="unlockAdminBtn">ክፈት (Unlock Admin)</button>
+        <button class="m-btn m-btn-outline" id="cancelAdminPinBtn">ዝጋ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-modal-backdrop" id="adminGeneratorModal">
+    <div class="m-modal-box m-admin-box">
+      <div class="m-admin-header">
+        <h3>👑 ሮያል ቢንጎ ፕሮ — Admin Wallet & CRM</h3>
+        <button class="m-close-btn" id="closeAdminGenBtn">✕</button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="m-admin-tabs">
+        <button class="m-tab-btn active" id="tabKeygenBtn">⚡ ዋሌት መሙያ</button>
+        <button class="m-tab-btn" id="tabCrmBtn">👥 የደንበኞች መዝገብ (CRM)</button>
+        <button class="m-tab-btn" id="tabPinResetBtn">🔑 PIN Reset</button>
+      </div>
+
+      <!-- Tab 1: Keygen -->
+      <div id="adminTabKeygen" class="admin-tab-pane active">
+        <div class="m-admin-form">
+          <label>1. የገዢው User ID (ለምሳሌ፦ <code>RB-SEK-2843</code>)</label>
+          <input type="text" id="adminBuyerUserId" value="RB-SEK-2843" class="m-input" />
+
+          <label>2. የገዢው የሙሌት ተራ (Sequence #)</label>
+          <input type="number" id="adminBuyerSeq" value="1" min="1" class="m-input" />
+
+          <label>3. የሚሞላለት የዋሌት ቶከን መጠን</label>
+          <select id="adminTokenPreset" class="m-input">
+            <option value="1000000" selected>1,000,000 Tokens</option>
+            <option value="500000">500,000 Tokens</option>
+            <option value="250000">250,000 Tokens</option>
+            <option value="100000">100,000 Tokens</option>
+            <option value="2000000">2,000,000 Tokens</option>
+            <option value="5000000">5,000,000 Tokens</option>
+            <option value="10000000">10,000,000 Tokens</option>
+          </select>
+
+          <label>ወይም ሌላ የቶከን መጠን፦</label>
+          <input type="number" id="adminCustomTokens" value="1000000" step="1000" class="m-input" />
+
+          <button class="m-btn m-btn-gold m-full-btn" id="generateSignedKeyBtn">⚡ ባለ 16-ፊደል ኮድ እና JSON አመንጭ</button>
+        </div>
+
+        <div id="adminGeneratedOutput" class="m-admin-output" style="display:none;">
+          <div class="m-key-box">
+            <span>ለገዢው በSMS / Telegram የሚላክ ባለ 16-ፊደል ኮድ፦</span>
+            <strong id="generated16KeyDisplay">RBPV-2843-5M00-9SWP</strong>
+            <button class="m-btn m-btn-emerald m-copy-btn" id="copySmsKeyBtn">📋 የSMS ኮድ ኮፒ አድርግ</button>
+          </div>
+
+          <div class="m-json-box">
+            <span>ለOnline 1-Click Sync (`wallets.json` ውስጥ የሚጨመር)፦</span>
+            <pre id="generatedJsonSnippet"></pre>
+            <button class="m-btn m-btn-outline m-copy-btn" id="copyJsonSnippetBtn">📋 JSON ኮፒ አድርግ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Encrypted Customer CRM -->
+      <div id="adminTabCrm" class="admin-tab-pane" style="display:none;">
+        <div class="m-admin-form">
+          <label>የደንበኛ ሙሉ ስም</label>
+          <input type="text" id="crmClientName" placeholder="ለምሳሌ፦ አበበ ከበደ" class="m-input" />
+          <label>የአዳራሽ ስምና ከተማ</label>
+          <input type="text" id="crmClientHall" placeholder="ለምሳሌ፦ Sekota Bingo Center (ሰቆጣ)" class="m-input" />
+          <label>ስልክ ቁጥር</label>
+          <input type="text" id="crmClientPhone" placeholder="0911XXXXXX" class="m-input" />
+          <label>User ID</label>
+          <input type="text" id="crmClientUid" placeholder="RB-SEK-2843" class="m-input" />
+          <button class="m-btn m-btn-emerald" id="saveCrmClientBtn">💾 ደንበኛ መዝግብ</button>
+        </div>
+        <div class="crm-client-list" id="crmClientListContainer"></div>
+      </div>
+
+      <!-- Tab 3: Remote PIN Reset Generator -->
+      <div id="adminTabPinReset" class="admin-tab-pane" style="display:none;">
+        <div class="m-admin-form">
+          <label>የገዢው User ID (PIN የረሳው ደንበኛ)</label>
+          <input type="text" id="pinResetUidInput" placeholder="RB-SEK-2843" class="m-input" />
+          <button class="m-btn m-btn-gold" id="generatePinResetTokenBtn">🔑 ባለ 8-ፊደል PIN Reset ኮድ አመንጭ</button>
+        </div>
+        <div id="pinResetTokenOutput" class="m-key-box" style="display:none; margin-top:10px;">
+          <span>ለገዢው የሚላክ የReset ኮድ፦</span>
+          <strong id="pinResetTokenDisplay">RST-XXXXXX</strong>
+          <button class="m-btn m-btn-emerald m-copy-btn" id="copyPinResetBtn">📋 ኮድ ኮፒ አድርግ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="royal-bingo-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

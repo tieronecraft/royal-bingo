@@ -1,0 +1,12 @@
+{
+  "appId": "com.royalcraft.habeshabingo500",
+  "appName": "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500)",
+  "webDir": "mobile/www",
+  "bundledWebRuntime": false,
+  "android": {
+    "buildOptions": {
+      "keystorePath": "royal-bingo-release.keystore",
+      "keystoreAlias": "royalbingo"
+    }
+  }
+}

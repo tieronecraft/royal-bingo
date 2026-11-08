@@ -1,0 +1,502 @@
+{
+  "version": "2.0.0",
+  "package": "RoyalBingoPro_Amharic_Voices_Master_Pack",
+  "voices": {
+    "female": "am-ET-MekdesNeural",
+    "male": "am-ET-AmehaNeural"
+  },
+  "balls": {
+    "1": {
+      "number": 1,
+      "code": "B-1",
+      "amharic_text": "ቢ፣ አንድ",
+      "duration_ms": 1150
+    },
+    "2": {
+      "number": 2,
+      "code": "B-2",
+      "amharic_text": "ቢ፣ ሁለት",
+      "duration_ms": 1150
+    },
+    "3": {
+      "number": 3,
+      "code": "B-3",
+      "amharic_text": "ቢ፣ ሶስት",
+      "duration_ms": 1150
+    },
+    "4": {
+      "number": 4,
+      "code": "B-4",
+      "amharic_text": "ቢ፣ አራት",
+      "duration_ms": 1150
+    },
+    "5": {
+      "number": 5,
+      "code": "B-5",
+      "amharic_text": "ቢ፣ አምስት",
+      "duration_ms": 1150
+    },
+    "6": {
+      "number": 6,
+      "code": "B-6",
+      "amharic_text": "ቢ፣ ስድስት",
+      "duration_ms": 1150
+    },
+    "7": {
+      "number": 7,
+      "code": "B-7",
+      "amharic_text": "ቢ፣ ሰባት",
+      "duration_ms": 1150
+    },
+    "8": {
+      "number": 8,
+      "code": "B-8",
+      "amharic_text": "ቢ፣ ስምንት",
+      "duration_ms": 1150
+    },
+    "9": {
+      "number": 9,
+      "code": "B-9",
+      "amharic_text": "ቢ፣ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "10": {
+      "number": 10,
+      "code": "B-10",
+      "amharic_text": "ቢ፣ አስር",
+      "duration_ms": 1150
+    },
+    "11": {
+      "number": 11,
+      "code": "B-11",
+      "amharic_text": "ቢ፣ አስራ አንድ",
+      "duration_ms": 1150
+    },
+    "12": {
+      "number": 12,
+      "code": "B-12",
+      "amharic_text": "ቢ፣ አስራ ሁለት",
+      "duration_ms": 1150
+    },
+    "13": {
+      "number": 13,
+      "code": "B-13",
+      "amharic_text": "ቢ፣ አስራ ሶስት",
+      "duration_ms": 1150
+    },
+    "14": {
+      "number": 14,
+      "code": "B-14",
+      "amharic_text": "ቢ፣ አስራ አራት",
+      "duration_ms": 1150
+    },
+    "15": {
+      "number": 15,
+      "code": "B-15",
+      "amharic_text": "ቢ፣ አስራ አምስት",
+      "duration_ms": 1150
+    },
+    "16": {
+      "number": 16,
+      "code": "I-16",
+      "amharic_text": "አይ፣ አስራ ስድስት",
+      "duration_ms": 1150
+    },
+    "17": {
+      "number": 17,
+      "code": "I-17",
+      "amharic_text": "አይ፣ አስራ ሰባት",
+      "duration_ms": 1150
+    },
+    "18": {
+      "number": 18,
+      "code": "I-18",
+      "amharic_text": "አይ፣ አስራ ስምንት",
+      "duration_ms": 1150
+    },
+    "19": {
+      "number": 19,
+      "code": "I-19",
+      "amharic_text": "አይ፣ አስራ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "20": {
+      "number": 20,
+      "code": "I-20",
+      "amharic_text": "አይ፣ ሃያ",
+      "duration_ms": 1150
+    },
+    "21": {
+      "number": 21,
+      "code": "I-21",
+      "amharic_text": "አይ፣ ሃያ አንድ",
+      "duration_ms": 1150
+    },
+    "22": {
+      "number": 22,
+      "code": "I-22",
+      "amharic_text": "አይ፣ ሃያ ሁለት",
+      "duration_ms": 1150
+    },
+    "23": {
+      "number": 23,
+      "code": "I-23",
+      "amharic_text": "አይ፣ ሃያ ሶስት",
+      "duration_ms": 1150
+    },
+    "24": {
+      "number": 24,
+      "code": "I-24",
+      "amharic_text": "አይ፣ ሃያ አራት",
+      "duration_ms": 1150
+    },
+    "25": {
+      "number": 25,
+      "code": "I-25",
+      "amharic_text": "አይ፣ ሃያ አምስት",
+      "duration_ms": 1150
+    },
+    "26": {
+      "number": 26,
+      "code": "I-26",
+      "amharic_text": "አይ፣ ሃያ ስድስት",
+      "duration_ms": 1150
+    },
+    "27": {
+      "number": 27,
+      "code": "I-27",
+      "amharic_text": "አይ፣ ሃያ ሰባት",
+      "duration_ms": 1150
+    },
+    "28": {
+      "number": 28,
+      "code": "I-28",
+      "amharic_text": "አይ፣ ሃያ ስምንት",
+      "duration_ms": 1150
+    },
+    "29": {
+      "number": 29,
+      "code": "I-29",
+      "amharic_text": "አይ፣ ሃያ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "30": {
+      "number": 30,
+      "code": "I-30",
+      "amharic_text": "አይ፣ ሰላሳ",
+      "duration_ms": 1150
+    },
+    "31": {
+      "number": 31,
+      "code": "N-31",
+      "amharic_text": "ኤን፣ ሰላሳ አንድ",
+      "duration_ms": 1150
+    },
+    "32": {
+      "number": 32,
+      "code": "N-32",
+      "amharic_text": "ኤን፣ ሰላሳ ሁለት",
+      "duration_ms": 1150
+    },
+    "33": {
+      "number": 33,
+      "code": "N-33",
+      "amharic_text": "ኤን፣ ሰላሳ ሶስት",
+      "duration_ms": 1150
+    },
+    "34": {
+      "number": 34,
+      "code": "N-34",
+      "amharic_text": "ኤን፣ ሰላሳ አራት",
+      "duration_ms": 1150
+    },
+    "35": {
+      "number": 35,
+      "code": "N-35",
+      "amharic_text": "ኤን፣ ሰላሳ አምስት",
+      "duration_ms": 1150
+    },
+    "36": {
+      "number": 36,
+      "code": "N-36",
+      "amharic_text": "ኤን፣ ሰላሳ ስድስት",
+      "duration_ms": 1150
+    },
+    "37": {
+      "number": 37,
+      "code": "N-37",
+      "amharic_text": "ኤን፣ ሰላሳ ሰባት",
+      "duration_ms": 1150
+    },
+    "38": {
+      "number": 38,
+      "code": "N-38",
+      "amharic_text": "ኤን፣ ሰላሳ ስምንት",
+      "duration_ms": 1150
+    },
+    "39": {
+      "number": 39,
+      "code": "N-39",
+      "amharic_text": "ኤን፣ ሰላሳ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "40": {
+      "number": 40,
+      "code": "N-40",
+      "amharic_text": "ኤን፣ አርባ",
+      "duration_ms": 1150
+    },
+    "41": {
+      "number": 41,
+      "code": "N-41",
+      "amharic_text": "ኤን፣ አርባ አንድ",
+      "duration_ms": 1150
+    },
+    "42": {
+      "number": 42,
+      "code": "N-42",
+      "amharic_text": "ኤን፣ አርባ ሁለት",
+      "duration_ms": 1150
+    },
+    "43": {
+      "number": 43,
+      "code": "N-43",
+      "amharic_text": "ኤን፣ አርባ ሶስት",
+      "duration_ms": 1150
+    },
+    "44": {
+      "number": 44,
+      "code": "N-44",
+      "amharic_text": "ኤን፣ አርባ አራት",
+      "duration_ms": 1150
+    },
+    "45": {
+      "number": 45,
+      "code": "N-45",
+      "amharic_text": "ኤን፣ አርባ አምስት",
+      "duration_ms": 1150
+    },
+    "46": {
+      "number": 46,
+      "code": "G-46",
+      "amharic_text": "ጂ፣ አርባ ስድስት",
+      "duration_ms": 1150
+    },
+    "47": {
+      "number": 47,
+      "code": "G-47",
+      "amharic_text": "ጂ፣ አርባ ሰባት",
+      "duration_ms": 1150
+    },
+    "48": {
+      "number": 48,
+      "code": "G-48",
+      "amharic_text": "ጂ፣ አርባ ስምንት",
+      "duration_ms": 1150
+    },
+    "49": {
+      "number": 49,
+      "code": "G-49",
+      "amharic_text": "ጂ፣ አርባ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "50": {
+      "number": 50,
+      "code": "G-50",
+      "amharic_text": "ጂ፣ ሃምሳ",
+      "duration_ms": 1150
+    },
+    "51": {
+      "number": 51,
+      "code": "G-51",
+      "amharic_text": "ጂ፣ ሃምሳ አንድ",
+      "duration_ms": 1150
+    },
+    "52": {
+      "number": 52,
+      "code": "G-52",
+      "amharic_text": "ጂ፣ ሃምሳ ሁለት",
+      "duration_ms": 1150
+    },
+    "53": {
+      "number": 53,
+      "code": "G-53",
+      "amharic_text": "ጂ፣ ሃምሳ ሶስት",
+      "duration_ms": 1150
+    },
+    "54": {
+      "number": 54,
+      "code": "G-54",
+      "amharic_text": "ጂ፣ ሃምሳ አራት",
+      "duration_ms": 1150
+    },
+    "55": {
+      "number": 55,
+      "code": "G-55",
+      "amharic_text": "ጂ፣ ሃምሳ አምስት",
+      "duration_ms": 1150
+    },
+    "56": {
+      "number": 56,
+      "code": "G-56",
+      "amharic_text": "ጂ፣ ሃምሳ ስድስት",
+      "duration_ms": 1150
+    },
+    "57": {
+      "number": 57,
+      "code": "G-57",
+      "amharic_text": "ጂ፣ ሃምሳ ሰባት",
+      "duration_ms": 1150
+    },
+    "58": {
+      "number": 58,
+      "code": "G-58",
+      "amharic_text": "ጂ፣ ሃምሳ ስምንት",
+      "duration_ms": 1150
+    },
+    "59": {
+      "number": 59,
+      "code": "G-59",
+      "amharic_text": "ጂ፣ ሃምሳ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "60": {
+      "number": 60,
+      "code": "G-60",
+      "amharic_text": "ጂ፣ ስልሳ",
+      "duration_ms": 1150
+    },
+    "61": {
+      "number": 61,
+      "code": "O-61",
+      "amharic_text": "ኦ፣ ስልሳ አንድ",
+      "duration_ms": 1150
+    },
+    "62": {
+      "number": 62,
+      "code": "O-62",
+      "amharic_text": "ኦ፣ ስልሳ ሁለት",
+      "duration_ms": 1150
+    },
+    "63": {
+      "number": 63,
+      "code": "O-63",
+      "amharic_text": "ኦ፣ ስልሳ ሶስት",
+      "duration_ms": 1150
+    },
+    "64": {
+      "number": 64,
+      "code": "O-64",
+      "amharic_text": "ኦ፣ ስልሳ አራት",
+      "duration_ms": 1150
+    },
+    "65": {
+      "number": 65,
+      "code": "O-65",
+      "amharic_text": "ኦ፣ ስልሳ አምስት",
+      "duration_ms": 1150
+    },
+    "66": {
+      "number": 66,
+      "code": "O-66",
+      "amharic_text": "ኦ፣ ስልሳ ስድስት",
+      "duration_ms": 1150
+    },
+    "67": {
+      "number": 67,
+      "code": "O-67",
+      "amharic_text": "ኦ፣ ስልሳ ሰባት",
+      "duration_ms": 1150
+    },
+    "68": {
+      "number": 68,
+      "code": "O-68",
+      "amharic_text": "ኦ፣ ስልሳ ስምንት",
+      "duration_ms": 1150
+    },
+    "69": {
+      "number": 69,
+      "code": "O-69",
+      "amharic_text": "ኦ፣ ስልሳ ዘጠኝ",
+      "duration_ms": 1150
+    },
+    "70": {
+      "number": 70,
+      "code": "O-70",
+      "amharic_text": "ኦ፣ ሰባ",
+      "duration_ms": 1150
+    },
+    "71": {
+      "number": 71,
+      "code": "O-71",
+      "amharic_text": "ኦ፣ ሰባ አንድ",
+      "duration_ms": 1150
+    },
+    "72": {
+      "number": 72,
+      "code": "O-72",
+      "amharic_text": "ኦ፣ ሰባ ሁለት",
+      "duration_ms": 1150
+    },
+    "73": {
+      "number": 73,
+      "code": "O-73",
+      "amharic_text": "ኦ፣ ሰባ ሶስት",
+      "duration_ms": 1150
+    },
+    "74": {
+      "number": 74,
+      "code": "O-74",
+      "amharic_text": "ኦ፣ ሰባ አራት",
+      "duration_ms": 1150
+    },
+    "75": {
+      "number": 75,
+      "code": "O-75",
+      "amharic_text": "ኦ፣ ሰባ አምስት",
+      "duration_ms": 1150
+    }
+  },
+  "statuses": {
+    "status_game_start": {
+      "text": "ጨዋታው ተጀምሯል፣ መልካም ዕድል!",
+      "duration_ms": 1850
+    },
+    "status_game_paused": {
+      "text": "ጨዋታው ለጊዜው ቆሟል",
+      "duration_ms": 1850
+    },
+    "status_game_resumed": {
+      "text": "ጨዋታው ቀጥሏል",
+      "duration_ms": 1850
+    },
+    "status_cartela_won": {
+      "text": "ይህ ካርቴላ አሸንፏል! እንኳን ደስ አለዎት!",
+      "duration_ms": 1850
+    },
+    "status_cartela_locked": {
+      "text": "ይህ ካርቴላ አልዘጋም! ካርቴላው ታስሯል!",
+      "duration_ms": 1850
+    },
+    "status_missed_last_ball": {
+      "text": "ዝጉ አልፎታል! የመጨረሻዋ የተጠራች ቁጥር በዚህ ዝግ ውስጥ የለችም! ካርቴላው ታስሯል!",
+      "duration_ms": 1850
+    },
+    "status_cartela_unlocked": {
+      "text": "የካርቴላው እስር ተፈቷል",
+      "duration_ms": 1850
+    },
+    "status_inspect_only": {
+      "text": "የካርቴላ ቁጥር ማረጋገጫ",
+      "duration_ms": 1850
+    },
+    "status_wallet_topup_success": {
+      "text": "እንኳን ደስ አለዎት! የዋሌት ቶከን በተሳካ ሁኔታ ተሞልቷል!",
+      "duration_ms": 1850
+    },
+    "status_new_round_ready": {
+      "text": "አዲስ የጨዋታ ዙር ለመጀመር ዝግጁ ነው",
+      "duration_ms": 1850
+    }
+  }
+}

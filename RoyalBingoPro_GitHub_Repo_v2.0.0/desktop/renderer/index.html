@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — የቢንጎ አዳራሽ ማስተዳደሪያ</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-night">
+  <!-- ===================================================================== -->
+  <!-- TOP ROYAL HEADER BAR                                                  -->
+  <!-- ===================================================================== -->
+  <header class="top-bar">
+    <div class="brand-group" id="brandLogoTrigger" title="ሮያል ቢንጎ ፕሮ">
+      <img src="../../assets/logo.svg" alt="ሮያል ቢንጎ ፕሮ ሎጎ" class="brand-logo" />
+      <div>
+        <h1 class="brand-title">ሮያል ቢንጎ ፕሮ <span class="gold-pill">ፕሮ 500</span></h1>
+        <p class="brand-subtitle" id="hallIdentityDisplay">ሮያል ሀበሻ ቢንጎ አዳራሽ</p>
+      </div>
+    </div>
+
+    <!-- Live Prize & Active Pattern Strip -->
+    <div class="header-metrics">
+      <div class="metric-chip">
+        <span class="metric-label">የተመረጠ የዝግ አይነት</span>
+        <span class="metric-value gold-text" id="topActivePatternName">ወደተፈለገበት 1 ዝግ</span>
+      </div>
+      <div class="metric-chip">
+        <span class="metric-label">የተያዙ ካርቴላዎች</span>
+        <span class="metric-value" id="topBookedCount">0</span>
+      </div>
+      <div class="metric-chip prize-highlight">
+        <span class="metric-label">🏆 ለአሸናፊ ደራሽ ሂሳብ (75%)</span>
+        <span class="metric-value prize-big" id="topNetPrizeDisplay">0 ብር</span>
+      </div>
+    </div>
+
+    <!-- Wallet Balance (PIN Protected) & Settings -->
+    <div class="wallet-bar-group">
+      <div class="wallet-badge" id="walletToggleBtn" title="ቀሪ ዋሌት ለማየት በሚስጥር ቁጥር ይክፈቱ">
+        <span class="wallet-icon">🪙</span>
+        <div>
+          <span class="wallet-label">ቀሪ ዋሌት (በሚስጥር ቁጥር)</span>
+          <strong class="wallet-amount" id="walletBalanceText">••••••••</strong>
+        </div>
+      </div>
+      <button class="btn btn-gold" id="openWalletModalBtn">+ ዋሌት መሙያ</button>
+      <button class="btn btn-outline" id="themeToggleBtn" title="የቀን ብርሃን / የምሽት ገጽታ">☀️ የቀን ገጽታ</button>
+      <button class="btn btn-outline" id="openSettingsModalBtn" title="ውቅሮች">⚙️ ውቅር</button>
+      <button class="btn btn-outline" id="fullscreenBtn" title="ሙሉ ስክሪን (TV Mode)">📺 ሙሉ ስክሪን</button>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: PRE-GAME SETUP & 1..500 CARTELA SELECTOR                      -->
+  <!-- ===================================================================== -->
+  <main id="setupView" class="view-container active-view">
+    <div class="setup-grid-layout">
+      <!-- LEFT PANEL: Stake, Prize, Pattern & Quick Cartela Input -->
+      <aside class="setup-sidebar card-surface">
+        <h2 class="section-heading">1. የዙር ውቅርና ደራሽ ሂሳብ ማስያ</h2>
+
+        <!-- Stake Per Cartela -->
+        <div class="control-block">
+          <label class="control-label">የ1 ካርቴላ መግቢያ ዋጋ (ብር)፦</label>
+          <div class="stake-preset-row" id="stakePresetButtons">
+            <button class="stake-btn" data-stake="10">10</button>
+            <button class="stake-btn" data-stake="20">20</button>
+            <button class="stake-btn active" data-stake="30">30</button>
+            <button class="stake-btn" data-stake="50">50</button>
+            <button class="stake-btn" data-stake="100">100</button>
+            <button class="stake-btn" data-stake="200">200</button>
+            <button class="stake-btn" data-stake="500">500</button>
+          </div>
+          <div class="custom-stake-row">
+            <span>ሌላ የብር መጠን፦</span>
+            <input type="number" id="customStakeInput" value="30" min="5" step="5" class="input-field small-input" />
+          </div>
+        </div>
+
+        <!-- Winning Pattern Selector -->
+        <div class="control-block">
+          <label class="control-label">2. የዚሁ ዙር የዝግ አይነት ምርጫ፦</label>
+          <select id="winningPatternSelect" class="input-field select-field"></select>
+          <div class="pattern-preview-wrapper">
+            <div id="setupPatternMiniGrid" class="pattern-mini-grid"></div>
+            <div class="pattern-desc-box">
+              <strong id="setupPatternTitleAm">ወደተፈለገበት 1 ዝግ</strong>
+              <p id="setupPatternDescAm">አግዳሚ፣ ቋሚ ወይም ዲያጎናል 1 መስመር</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Add / Swap Cartela Input -->
+        <div class="control-block">
+          <label class="control-label">3. ፈጣን የካርቴላ መመዝገቢያ (#1–500)፦</label>
+          <div class="quick-add-row">
+            <input type="number" id="quickCartelaInput" min="1" max="500" placeholder="ካርቴላ # ጽፈው አስገባን ይጫኑ..." class="input-field" />
+            <button class="btn btn-emerald" id="quickAddBtn">+ መዝግብ</button>
+          </div>
+          <div class="swap-row">
+            <input type="number" id="swapFromInput" min="1" max="500" placeholder="ከ # (የተያዘ)" class="input-field tiny-input" />
+            <span>⇄</span>
+            <input type="number" id="swapToInput" min="1" max="500" placeholder="ወደ # (አዲስ)" class="input-field tiny-input" />
+            <button class="btn btn-outline" id="swapCartelaBtn">ቦታ ቀይር</button>
+          </div>
+        </div>
+
+        <!-- Live Prize Calculator Card -->
+        <div class="prize-calculator-card">
+          <div class="calc-row">
+            <span>የተያዙ ካርቴላዎች ብዛት፦</span>
+            <strong id="calcCartelaCount">0 ካርቴላ</strong>
+          </div>
+          <div class="calc-row">
+            <span>ጠቅላላ የተሰበሰበ ብር፦</span>
+            <strong id="calcGrossAmount">0 ብር</strong>
+          </div>
+          <div class="calc-row muted-row">
+            <span>የአጫዋች ትርፍ (<span id="calcCommissionPct">25</span>%)፦</span>
+            <strong id="calcHouseCut">0 ብር</strong>
+          </div>
+          <div class="calc-divider"></div>
+          <div class="calc-net-prize">
+            <span>ለአሸናፊ ደራሽ ሂሳብ (75%)፦</span>
+            <div class="golden-prize-number" id="calcNetPrizeGold">0 ብር</div>
+          </div>
+        </div>
+
+        <!-- Start Game CTA -->
+        <div class="setup-actions">
+          <button class="btn btn-start-massive" id="startGameBtn">🚀 ጨዋታ አስጀምር</button>
+          <button class="btn btn-danger-outline" id="clearAllSelectedBtn">🗑️ የተመረጡትን አጽዳ</button>
+        </div>
+      </aside>
+
+      <!-- RIGHT PANEL: 1 to 500 Interactive Cartela Grid -->
+      <section class="cartela-board-section card-surface">
+        <div class="board-header-row">
+          <div>
+            <h2 class="section-heading">ከካርቴላ #1 እስከ #500 መምረጫ ሰሌዳ</h2>
+            <p class="muted-text">ለመያዝ አንድ ጊዜ ይንኩ፤ የተያዘን ለማስወጣት ድጋሚ ይንኩ፤ ካርቴላውን ለማየት በረጅሙ ተጭነው ይያዙ።</p>
+          </div>
+          <div class="range-filter-tabs" id="cartelaRangeTabs">
+            <button class="tab-btn active" data-range="ALL">ሁሉም (1–500)</button>
+            <button class="tab-btn" data-range="1-100">1–100</button>
+            <button class="tab-btn" data-range="101-200">101–200</button>
+            <button class="tab-btn" data-range="201-300">201–300</button>
+            <button class="tab-btn" data-range="301-400">301–400</button>
+            <button class="tab-btn" data-range="401-500">401–500</button>
+          </div>
+        </div>
+
+        <div id="cartelaGrid500" class="cartela-grid-500"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: LIVE ARENA DASHBOARD                                          -->
+  <!-- ===================================================================== -->
+  <main id="arenaView" class="view-container">
+    <div class="arena-layout">
+      <!-- TOP PART: MASTER 1-75 CALLED NUMBERS BOARD + LOCKED PATTERN CORNER -->
+      <div class="arena-top-zone">
+        <!-- Master 1-75 B-I-N-G-O Board -->
+        <section class="master-board-card card-surface">
+          <div class="master-board-header">
+            <div class="header-left-tools">
+              <span class="badge-live">● ቀጥታ ጨዋታ በሂደት ላይ</span>
+              <span class="called-counter">🎱 የተጠሩ ቁጥሮች፦ <strong id="calledCountBadge">0 / 75</strong></span>
+              <button class="btn btn-outline btn-sm" id="arenaResetBoardBtn" title="ሰሌዳውን እንደገና አጽዳ">🔄 ሰሌዳ አጽዳ</button>
+            </div>
+            
+            <span class="voice-phrase-banner" id="liveAmharicPhraseBanner">"ጨዋታው ተጀምሯል፣ መልካም ዕድል!"</span>
+
+            <!-- SVG Volume & Mute Controls -->
+            <div class="audio-control-suite">
+              <button class="volume-btn" id="volumeMuteBtn" title="ድምፅ አጥፋ / አብራ">
+                <svg id="volumeSvgIcon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              </button>
+              <input type="range" id="masterVolumeSlider" min="0" max="100" value="100" class="volume-slider" title="የድምፅ መጠን" />
+            </div>
+          </div>
+          <div id="master75Grid" class="master-75-grid"></div>
+        </section>
+
+        <!-- Locked Winning Pattern & Prize Corner Widget -->
+        <aside class="arena-pattern-corner card-surface">
+          <div class="corner-header">የታሰረው የዝግ አይነት</div>
+          <div class="corner-pattern-title" id="arenaPatternTitle">ወደተፈለገበት 1 ዝግ</div>
+          <div id="arenaPatternMiniGrid" class="pattern-mini-grid large-mini"></div>
+          <div class="arena-prize-box">
+            <span>🏆 ለአሸናፊ ደራሽ ሂሳብ</span>
+            <strong id="arenaPrizeValue">0 ብር</strong>
+          </div>
+          <div class="locked-cartelas-strip">
+            <span>🔒 የታሰሩ ካርቴላዎች፦</span>
+            <strong id="lockedCartelasListText">የለም</strong>
+          </div>
+        </aside>
+      </div>
+
+      <!-- BOTTOM PART: PREVIOUS BALLS + CONTROLS + SPINNING BALL -->
+      <div class="arena-bottom-zone">
+        <!-- Bottom-Left: Previous Called Ball Circles -->
+        <div class="previous-balls-panel card-surface">
+          <div class="panel-label">ቀድሞ የተጠሩ ቁጥሮች</div>
+          <div class="prev-circles-row">
+            <div class="prev-ball-circle primary-prev" id="prevBall1Circle">
+              <span class="prev-tag">ቀድሞ የተጠራ</span>
+              <strong class="prev-num" id="prevBall1Text">--</strong>
+            </div>
+            <div class="prev-ball-circle secondary-prev" id="prevBall2Circle">
+              <span class="prev-tag">2ኛ ቀድሞ</span>
+              <strong class="prev-num" id="prevBall2Text">--</strong>
+            </div>
+            <div class="prev-ball-circle tertiary-prev" id="prevBall3Circle">
+              <span class="prev-tag">3ኛ ቀድሞ</span>
+              <strong class="prev-num" id="prevBall3Text">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom-Center: Controls & Verifier Bar -->
+        <div class="arena-controls-panel card-surface">
+          <div class="playback-controls-row">
+            <button class="btn btn-warning-big" id="pauseResumeBtn">⏸️ ጨዋታ አቁም</button>
+            <button class="btn btn-outline" id="replayVoiceBtn">🔊 ድምፅ ድገም</button>
+            <div class="speed-control-box">
+              <label>የጥሪ ፍጥነት፦ <strong id="speedValueLabel">3.5 ሰከንድ</strong></label>
+              <input type="range" id="callSpeedSlider" min="2.0" max="7.0" step="0.5" value="3.5" />
+            </div>
+            <select id="voiceGenderSelect" class="input-field voice-select" title="የአማርኛ ድምፅ ምርጫ">
+              <option value="female">🎙️ ሴት (መቅደስ)</option>
+              <option value="male">🎙️ ወንድ (አምሃ)</option>
+            </select>
+            <button class="btn btn-danger-outline" id="returnHomeBtn">🧿 ወደ አዲስ ዙር መመለሻ</button>
+          </div>
+
+          <!-- Smart Win Verifier Bar -->
+          <div class="verifier-bar">
+            <div class="verifier-input-group">
+              <label for="verifyCartelaInput">ካርቴላ ቁጥር (#1–500)፦</label>
+              <input type="number" id="verifyCartelaInput" min="1" max="500" placeholder="ለምሳሌ 145" class="input-field verify-input" />
+            </div>
+            <button class="btn btn-emerald-big" id="verifyWinBtn">🏆 ዝግ አረጋግጥ</button>
+            <button class="btn btn-cyan-big" id="inspectOnlyBtn">🔍 ቁጥር ማረጋገጫ (ሳያስር)</button>
+          </div>
+        </div>
+
+        <!-- Bottom-Right: Spinning Live Ball Circle -->
+        <div class="spinning-ball-panel card-surface">
+          <div class="panel-label">አሁን የሚጠራው ቁጥር</div>
+          <div class="spinning-sphere-container">
+            <div class="spinning-glow-ring" id="spinningRing"></div>
+            <div class="live-ball-core" id="liveBallCore">
+              <span class="live-ball-letter" id="liveBallLetter">B</span>
+              <strong class="live-ball-number" id="liveBallNumber">--</strong>
+            </div>
+          </div>
+          <div class="live-amharic-sub" id="liveBallAmharicSub">ለመጀመር ዝግጁ</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: 4-DIGIT PIN AUTHENTICATION                                     -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="pinAuthModal">
+    <div class="modal-box small-modal">
+      <div class="modal-header">
+        <h3 id="pinModalTitle">🔐 ባለ 4-አሃዝ ሚስጥር ቁጥር (PIN) ያስገቡ</h3>
+        <button class="modal-close-btn" id="closePinModalBtn">✕</button>
+      </div>
+      <p class="muted-text" id="pinModalDesc">የዋሌት ቀሪ ሂሳብንና የፋይናንስ ሪፖርቶችን ለማስተዳደር ሚስጥር ቁጥርዎን ያስገቡ፦</p>
+      <div class="pin-input-group">
+        <input type="password" id="userPinInput" maxlength="4" placeholder="••••" class="input-field pin-input" />
+      </div>
+      <div class="pin-modal-actions">
+        <button class="btn btn-gold btn-full" id="submitPinBtn">አረጋግጥና ክፈት</button>
+        <button class="btn btn-outline btn-full" id="forgotPinBtn">🔑 ሚስጥር ቁጥር ረሳሁ (PIN Reset)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: PIN RESET MODAL (VIA ADMIN / GITHUB BACKUP)                    -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="pinResetModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🔑 የሚስጥር ቁጥር (PIN) መቀየሪያ</h3>
+        <button class="modal-close-btn" id="closePinResetModalBtn">✕</button>
+      </div>
+      <p class="muted-text">ሚስጥር ቁጥርዎን ከረሱ፣ ከAdmin በSMS የተላከልዎትን የReset ኮድ ያስገቡ ወይም በኢንተርኔት ያገናኙ፦</p>
+      <div class="control-block">
+        <label class="control-label">ከAdmin የተላከ የReset ኮድ (ወይም Reset Token)፦</label>
+        <input type="text" id="pinResetCodeInput" placeholder="ለምሳሌ፦ RST-XXXXXX" class="input-field code-input" />
+      </div>
+      <div class="control-block">
+        <label class="control-label">አዲስ ባለ 4-አሃዝ ሚስጥር ቁጥር፦</label>
+        <input type="password" id="newPinInput" maxlength="4" placeholder="••••" class="input-field pin-input" />
+      </div>
+      <div id="pinResetFeedback" class="wallet-feedback-box"></div>
+      <button class="btn btn-gold btn-full" id="applyPinResetBtn">💾 አዲስ ሚስጥር ቁጥር አስቀምጥ</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SMART WIN VERIFIER & INSPECT POPUP                             -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="verifierModal">
+    <div class="modal-box verifier-modal-box">
+      <div class="modal-header">
+        <h3 id="verifierModalTitle">የካርቴላ ምርመራ ውጤት</h3>
+        <button class="modal-close-btn" id="closeVerifierModalBtn">✕</button>
+      </div>
+      <div class="verifier-status-banner" id="verifierStatusBanner"></div>
+      <div class="verifier-body-grid">
+        <div class="verifier-cartela-wrap">
+          <div class="cartela-card-header">
+            <span>ሮያል ቢንጎ ፕሮ — ካርቴላ <strong id="modalCartelaNumber">#1</strong></span>
+            <span id="modalCartelaLockBadge" class="badge-unlocked">ንቁ</span>
+          </div>
+          <div class="bingo-5x5-header">
+            <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+          </div>
+          <div id="modalCartela5x5Grid" class="bingo-5x5-grid"></div>
+        </div>
+
+        <div class="verifier-details-side">
+          <div class="detail-stat-box">
+            <span>ለአሸናፊ ደራሽ ሂሳብ፦</span>
+            <strong class="gold-prize-large" id="modalPrizeAmountText">0 ብር</strong>
+          </div>
+          <div class="detail-stat-box">
+            <span>የታሰረው የዝግ አይነት፦</span>
+            <strong id="modalPatternNameText">ወደተፈለገበት 1 ዝግ</strong>
+          </div>
+          <div class="detail-stat-box">
+            <span>የተመዘገበ ሁኔታ፦</span>
+            <strong id="modalBookingStatusText">በዚህ ዙር የተመዘገበ ካርቴላ</strong>
+          </div>
+          <div class="verifier-modal-actions">
+            <button class="btn btn-warning" id="unlockCartelaBtn" style="display:none;">🔓 እስሩን ፍታ</button>
+            <button class="btn btn-emerald" id="resumeAfterVerifyBtn">▶️ ጨዋታውን ቀጥል</button>
+            <button class="btn btn-gold" id="newRoundAfterWinBtn">🔄 አዲስ ዙር ጀምር</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: ZERO-ANYDESK WALLET TOP-UP & DAILY REVENUE LOG                 -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="walletModal">
+    <div class="modal-box wallet-modal-box">
+      <div class="modal-header">
+        <h3>🪙 ዋሌት መሙያ እና የፋይናንስ አስተዳደር</h3>
+        <button class="modal-close-btn" id="closeWalletModalBtn">✕</button>
+      </div>
+
+      <div class="wallet-modal-content">
+        <!-- Machine Identity Banner -->
+        <div class="machine-id-banner">
+          <div>
+            <span class="small-label">የእርስዎ User ID (ለAdmin የሚላክ)፦</span>
+            <strong class="machine-uid-code" id="modalMachineUserId">RB-SEK-2843</strong>
+          </div>
+          <div>
+            <span class="small-label">የአሁኑ የሙሌት ተራ (Sequence #)፦</span>
+            <strong class="machine-seq-code" id="modalSequenceNumber">1</strong>
+          </div>
+          <div>
+            <span class="small-label">ቀሪ ዋሌት ቶከን፦</span>
+            <strong class="machine-bal-code" id="modalCurrentWallet">0</strong>
+          </div>
+        </div>
+
+        <!-- Hall Name & City Registration -->
+        <div class="hall-reg-row">
+          <input type="text" id="hallNameInput" placeholder="የቢንጎ አዳራሽ ስም (ለምሳሌ፦ Sekota Bingo)" class="input-field" />
+          <input type="text" id="cityNameInput" placeholder="ከተማ (ለምሳሌ፦ Sekota)" class="input-field" />
+          <button class="btn btn-outline" id="saveHallIdentityBtn">💾 መለያ አስቀምጥ</button>
+        </div>
+
+        <!-- Universal Top-Up Box (Accepts 16-Digit Code OR Full JSON) -->
+        <div class="topup-method-card">
+          <h4>🔑 የዋሌት ማስሞያ ኮድ (ባለ 16-ፊደል ወይም የተላከልዎትን JSON ጽሑፍ እዚህ ያስገቡ)</h4>
+          <p class="muted-text">በSMS የተላከልዎትን ኮድ ወይም በTelegram የተላከውን JSON ጽሑፍ እዚህ ሳጥን ውስጥ አስገብተው ሙላ የሚለውን ይጫኑ፦</p>
+          <div class="offline-key-row">
+            <input type="text" id="universalTopUpInput" placeholder="ለምሳሌ፦ RBPV-2843-5M00-9SWP ወይም ሙሉውን JSON እዚህ ያስገቡ" class="input-field code-input" />
+            <button class="btn btn-gold" id="applyUniversalTopUpBtn">🔑 ኮድ አረጋግጥና ሙላ</button>
+          </div>
+        </div>
+
+        <!-- Online Hotspot 1-Click Sync -->
+        <div class="topup-method-card">
+          <h4>🌐 በኢንተርኔት በUser ID ብቻ በ1-Click ማስሞያ (ያለ AnyDesk)</h4>
+          <p class="muted-text">ስልክዎን ለ5 ሰከንድ Hotspot አብርተው ይህንን ቁልፍ ሲነኩ፣ በUser IDዎ የተላከውን ክሬዲት ከGitHub ላይ በራሱ ይሞላል፦</p>
+          <div class="online-sync-row">
+            <input type="text" id="remoteLedgerUrlInput" class="input-field" />
+            <button class="btn btn-emerald" id="onlineAutoTopUpBtn">🔄 በUser ID ዋሌት አስሞላ</button>
+          </div>
+        </div>
+
+        <!-- Feedback Area -->
+        <div id="walletTopUpFeedback" class="wallet-feedback-box"></div>
+
+        <!-- Special Customer Bonus & Discount Modal Trigger -->
+        <div class="bonus-banner-strip" id="openBonusInfoBtn">
+          <span>🎁 የደንበኞች ልዩ የቅናሽና የቦነስ አገልግሎት ዝርዝር (ለመክፈት ይንኩ)</span>
+        </div>
+
+        <!-- Daily Rounds Financial Log (በሚሸበሸብና በሚበተን አዝራር) -->
+        <div class="daily-audit-section">
+          <div class="audit-head-row">
+            <h4>📊 የዕለታዊ ጨዋታ ዙሮችና የትርፍ/ኪሳራ ሰንጠረዥ</h4>
+            <div class="audit-btns">
+              <button class="btn btn-outline btn-sm" id="toggleAuditTableBtn">▼ ዘርጋ / ሸብሽብ</button>
+              <button class="btn btn-danger-outline btn-sm" id="clearAuditLogsBtn">🗑️ ሪፖርት አጽዳ</button>
+            </div>
+          </div>
+          <div id="auditTableContainer" class="audit-table-wrap" style="display:none;">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>ዙር #</th>
+                  <th>ሰዓት</th>
+                  <th>ተጫዋች</th>
+                  <th>የ1 ካርቴላ</th>
+                  <th>ጠቅላላ ብር</th>
+                  <th>የአጫዋች (25%)</th>
+                  <th>ደራሽ (75%)</th>
+                  <th>አሸናፊ</th>
+                </tr>
+              </thead>
+              <tbody id="auditTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Admin Contact Footer -->
+        <div class="admin-contact-footer">
+          <strong>📞 ዋሌት ለማስሞላት የባለቤቱ አድራሻ፦</strong>
+          <div>ስልክ / Telegram፦ <strong>+251 925432016</strong> | <strong>@OneGBEthiopia</strong></div>
+          <div>የባንክ አካውንቶች፦ <strong>CBE: 1000212746367 | Telebirr: 0925432016</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SPECIAL BONUS & DISCOUNT INFO                                  -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="bonusModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🎁 የደንበኞች ልዩ የቅናሽና የቦነስ አገልግሎት</h3>
+        <button class="modal-close-btn" id="closeBonusModalBtn">✕</button>
+      </div>
+      <div class="bonus-content-box">
+        <p>ውድ ደንበኛችን! በሮያል ቢንጎ ፕሮ ሲጠቀሙ የሚከተሉትን ቋሚ ጥቅሞች ያገኛሉ፦</p>
+        <ul class="bonus-list">
+          <li><strong>ለአዳዲስ ገዢዎች</strong>፦ የመጀመሪያውን የሶፍትዌር ጭነት ሲያደርጉ የሙከራ ዋሌት ቶከን በስጦታ ይሰጣል።</li>
+          <li><strong>ለተከታታይ ገዢዎች</strong>፦ በየወሩ ከፍተኛ ቶከን ለሚገዙ አዳራሾች እስከ <strong>15% ተጨማሪ የቦነስ ቶከን</strong> በነፃ ይሞላል።</li>
+          <li><strong>ፈጣን ድጋፍ</strong>፦ የቴክኒክ ወይም የዋሌት ችግር ካጋጠመዎት በቴሌግራም (<strong>@OneGBEthiopia</strong>) በ24 ሰዓት ውስጥ ምላሽ ያገኛሉ።</li>
+        </ul>
+        <button class="btn btn-gold btn-full" id="closeBonusDoneBtn">ተረዳሁ (ዝጋ)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: OPERATOR SETTINGS                                              -->
+  <!-- ===================================================================== -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>⚙️ የአጫዋች ውቅር</h3>
+        <button class="modal-close-btn" id="closeSettingsModalBtn">✕</button>
+      </div>
+      <div class="wallet-modal-content">
+        <div class="control-block">
+          <label class="control-label">የአጫዋች ትርፍ ኮሚሽን መቶኛ (Default 25%)፦</label>
+          <input type="number" id="commissionPercentInput" min="5" max="50" value="25" class="input-field" />
+        </div>
+        <div class="control-block">
+          <label class="control-label">የመጨረሻዋ የተጠራች ቁጥር ጥብቅ ማረጋገጫ (Strict Last-Ball Rule)፦</label>
+          <select id="strictLastBallRuleSelect" class="input-field">
+            <option value="true" selected>በርቷል (የመጨረሻዋ ቁጥር በዝጉ ውስጥ ካልተገኘች አያሸንፍም)</option>
+            <option value="false">ጠፍቷል (ያለፈበትም ቢሆን ዝጉ ከሞላ ያሸንፋል)</option>
+          </select>
+        </div>
+        <div class="control-block">
+          <label class="control-label">የስክሪን ብርሃን ገጽታ፦</label>
+          <select id="themeSelectField" class="input-field">
+            <option value="night" selected>የምሽት ገጽታ (Night Lounge)</option>
+            <option value="day">☀️ የቀን ብርሃን ጎላ ያለ ገጽታ (High-Contrast Daylight)</option>
+          </select>
+        </div>
+        <button class="btn btn-gold btn-full" id="saveSettingsBtn">💾 ውቅር አስቀምጥ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom In-App Toast Notification (Zero Native Alerts) -->
+  <div id="customToast" class="custom-toast"></div>
+
+  <script src="../../shared/royal-bingo-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
