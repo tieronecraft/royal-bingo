@@ -1,4 +1,4 @@
-name: Build Royal Bingo Pro 500 (.EXE + .APK + .AAB) & Publish Release
+name: Build Royal Bingo Pro 500 v2.0 (.EXE + .APK + .AAB) & Publish Release
 
 on:
   push:
@@ -11,26 +11,39 @@ permissions:
 
 jobs:
   # ============================================================================
-  # JOB 1: BUILD WINDOWS DESKTOP .EXE INSTALLER (NSIS + PRE-BUNDLED AMHARIC VOICES)
+  # JOB 1: BUILD WINDOWS DESKTOP .EXE v2.0.0 (DIRECTLY FROM v2.0.0.ZIP)
   # ============================================================================
   build-windows-exe:
-    name: "Job 1 — Build Windows .EXE (NSIS + Offline Amharic Neural Voices)"
+    name: "Job 1 — Build Windows .EXE v2.0.0 (100% Amharic + PIN Lock)"
     runs-on: windows-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.11
+      - name: Force Extract ONLY v2.0.0 ZIP & Clean Old v1.0.0 Files
+        shell: bash
+        run: |
+          set -e
+          echo "Cleaning any legacy v1.0.0 folders..."
+          rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup"
+          rm -f *v1.0.0*.zip
+          if [ -f "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" ]; then
+            echo "Extracting RoyalBingoPro_GitHub_Repo_v2.0.0.zip directly into workspace..."
+            unzip -o "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" -x ".github/*"
+          fi
+          ls -la
+
+      - name: Setup Python 3.11 & Generate Multi-Resolution Icons
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Generate Multi-Resolution Icons
+      - name: Build Icons
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          pip install Pillow edge-tts
+          pip install Pillow
           python scripts/generate_icons.py || true
 
       - name: Setup Node.js 22 LTS
@@ -38,7 +51,7 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install Dependencies & Build Windows .EXE (NSIS)
+      - name: Build Windows .EXE v2.0.0 (NSIS)
         shell: bash
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
@@ -48,53 +61,102 @@ jobs:
           EXE_FOUND=$(find dist -maxdepth 1 -name "*.exe" | head -n 1)
           if [ -n "$EXE_FOUND" ]; then
             cp "$EXE_FOUND" dist/RoyalBingoPro_Setup.exe || true
-            cp "$EXE_FOUND" dist/RoyalBingoPro_Setup_v1.0.0.exe || true
+            cp "$EXE_FOUND" dist/RoyalBingoPro_Setup_v2.0.0.exe || true
           fi
 
-      - name: Upload Windows .EXE Artifact
+      - name: Upload Windows .EXE v2.0.0 Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RoyalBingoPro-Windows-EXE
+          name: RoyalBingoPro-Windows-EXE-v2
           path: |
             dist/RoyalBingoPro_Setup.exe
-            dist/RoyalBingoPro_Setup_v1.0.0.exe
+            dist/RoyalBingoPro_Setup_v2.0.0.exe
 
   # ============================================================================
-  # JOB 2: BUILD SIGNED ANDROID .APK & .AAB (PRE-INSTALLED ANDROID SDK + JAVA 21)
+  # JOB 2: BUILD ANDROID .APK v2.0.0 & DEPLOY LIVE TABLET SIMULATOR TO GITHUB PAGES
   # ============================================================================
   build-android-apk:
-    name: "Job 2 — Build Signed Android .APK & .AAB (500-Cartela + Admin Keygen)"
+    name: "Job 2 — Build Android .APK v2.0.0 & Deploy Tablet Web Simulator"
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.11
+      - name: Force Extract ONLY v2.0.0 ZIP & Push Clean v2.0 Files for Tablet Web Simulator
+        run: |
+          set -e
+          git rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup" *v1.0.0*.zip 2>/dev/null || true
+          rm -rf "#@Royal-Bingo-Setup" "⩩@Royal-Bingo-Setup" *v1.0.0*.zip
+          if [ -f "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" ]; then
+            echo "Unpacking RoyalBingoPro_GitHub_Repo_v2.0.0.zip..."
+            unzip -o "RoyalBingoPro_GitHub_Repo_v2.0.0.zip" -x ".github/*"
+          fi
+          mkdir -p mobile/www
+          cp shared/royal-bingo-core.js mobile/www/royal-bingo-core.js
+          cp assets/logo.svg mobile/www/logo.svg
+
+          # Create a clean root index.html so https://tieronecraft.github.io/royal-bingo/ opens the v2.0 Launchpad!
+          cat << 'EOF' > index.html
+          <!DOCTYPE html>
+          <html lang="am">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500 — v2.0)</title>
+            <style>
+              body { background:#050914; color:#fff; font-family:sans-serif; text-align:center; padding:30px 16px; }
+              .card { max-width:620px; margin:0 auto; background:#0f172a; border:2px solid #facc15; border-radius:18px; padding:24px; }
+              h1 { color:#facc15; margin-bottom:8px; }
+              .btn { display:block; margin:14px 0; padding:16px; border-radius:12px; font-weight:900; font-size:1.1rem; text-decoration:none; }
+              .btn-sim { background:linear-gradient(135deg,#0284c7,#0369a1); color:#fff; border:2px solid #38bdf8; }
+              .btn-mob { background:linear-gradient(135deg,#7c3aed,#5b21b6); color:#fff; border:2px solid #c084fc; }
+              .btn-exe { background:linear-gradient(135deg,#facc15,#ca8a04); color:#020617; }
+              .btn-apk { background:linear-gradient(135deg,#22c55e,#15803d); color:#fff; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1>👑 ሮያል ቢንጎ ፕሮ (v2.0 Enterprise)</h1>
+              <p>በታብሌትዎ ወይም በስልክዎ ወዲያውኑ ለመሞከር ወይም ለማውረድ ከታች ይምረጡ፦</p>
+              <a class="btn btn-sim" href="./desktop/renderer/index.html">🖥️ 1. የኮምፒውተሩን (.EXE) ቢንጎ አሁኑኑ በታብሌትዎ ይክፈቱና ይሞክሩ!</a>
+              <a class="btn btn-mob" href="./mobile/www/index.html">📱 2. የስልኩን 500-ካርቴላ እና 27-Tap Admin በብራውዘር ይሞክሩ!</a>
+              <hr style="border-color:rgba(250,204,21,0.3); margin:20px 0;" />
+              <a class="btn btn-exe" href="https://github.com/tieronecraft/royal-bingo/releases/latest/download/RoyalBingoPro_Setup_v2.0.0.exe">💻 የኮምፒውተር ሶፍትዌር አውርድ (RoyalBingoPro_Setup_v2.0.0.exe)</a>
+              <a class="btn btn-apk" href="https://github.com/tieronecraft/royal-bingo/releases/latest/download/RoyalBingoPro_500Cartela_v2.0.0.apk">📲 የስልክ መተግበሪያ አውርድ (RoyalBingoPro_500Cartela_v2.0.0.apk)</a>
+            </div>
+          </body>
+          </html>
+          EOF
+
+          git config user.name "RoyalCraft v2 Builder"
+          git config user.email "bot@royalcraft.et"
+          git add -A
+          git commit -m "Deploy unpacked v2.0.0 files to root for GitHub Pages [skip ci]" || true
+          git push origin HEAD:main || true
+
+      - name: Setup Python 3.11 & Generate Icons
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Prepare Mobile Assets
+      - name: Build Icons
         run: |
-          pip install Pillow edge-tts
+          pip install Pillow
           python scripts/generate_icons.py || true
-          mkdir -p mobile/www
-          cp shared/royal-bingo-core.js mobile/www/royal-bingo-core.js
-          cp assets/logo.svg mobile/www/logo.svg
 
       - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Setup Java JDK 21 (Required by Capacitor 6 & Android Gradle 8+)
+      - name: Setup Java JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Build Signed Android .APK + .AAB
+      - name: Build Signed Android .APK v2.0.0 + .AAB
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
@@ -108,7 +170,6 @@ jobs:
           npx cap add android
           npx cap sync android
 
-          # Production Keystore
           rm -f android/app/royal-bingo-release.keystore
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | tr -d ' \t\n\r' | base64 -d > android/app/royal-bingo-release.keystore || true
@@ -137,57 +198,57 @@ jobs:
           mkdir -p ../dist-android
           APK_FILE=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
           AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          cp "$APK_FILE" ../dist-android/RoyalBingoPro_500Cartela_v2.0.0.apk
           cp "$APK_FILE" ../dist-android/RoyalBingoPro_500Cartela_v1.0.0.apk
-          cp "$AAB_FILE" ../dist-android/RoyalBingoPro_500Cartela_v1.0.0.aab
-          ls -lh ../dist-android/
+          cp "$AAB_FILE" ../dist-android/RoyalBingoPro_500Cartela_v2.0.0.aab
 
-      - name: Upload Android .APK & .AAB Artifacts
+      - name: Upload Android .APK v2.0.0 Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: RoyalBingoPro-Android-APK-AAB
+          name: RoyalBingoPro-Android-APK-v2
           path: |
+            dist-android/RoyalBingoPro_500Cartela_v2.0.0.apk
             dist-android/RoyalBingoPro_500Cartela_v1.0.0.apk
-            dist-android/RoyalBingoPro_500Cartela_v1.0.0.aab
+            dist-android/RoyalBingoPro_500Cartela_v2.0.0.aab
 
   # ============================================================================
-  # JOB 3: PUBLISH DIRECT DOWNLOAD RELEASE (.EXE + .APK + .AAB) ON GITHUB RELEASES
+  # JOB 3: PUBLISH OFFICIAL v2.0.0 RELEASE ON GITHUB RELEASES
   # ============================================================================
   publish-release:
-    name: "Job 3 — Publish Direct Download Links to GitHub Releases"
+    name: "Job 3 — Publish Official v2.0.0 Release Links"
     needs: [build-windows-exe, build-android-apk]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Built Windows .EXE Artifact
+      - name: Download Windows .EXE v2.0.0 Artifact
         uses: actions/download-artifact@v4
         with:
-          name: RoyalBingoPro-Windows-EXE
+          name: RoyalBingoPro-Windows-EXE-v2
           path: release-assets
 
-      - name: Download Built Android .APK & .AAB Artifacts
+      - name: Download Android .APK v2.0.0 Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: RoyalBingoPro-Android-APK-AAB
+          name: RoyalBingoPro-Android-APK-v2
           path: release-assets
 
-      - name: Create / Update GitHub Release with Direct Download Links
+      - name: Create Official v2.0.0 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v2.0.0
-          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Release v2.0.0"
+          name: "ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Official Enterprise Release v2.0.0"
           body: |
-            ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Commercial Bingo Suite v2.0
-            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE`)**: `RoyalBingoPro_Setup.exe`
-            - **📱 የስልክ 500-ካርቴላ እና Admin መተግበሪያ (`.APK`)**: `RoyalBingoPro_500Cartela_v1.0.0.apk`
-            - **📦 Google Play Bundle (`.AAB`)**: `RoyalBingoPro_500Cartela_v1.0.0.aab`
-            - **📞 Wallet Top-Up Contact**: `+251 925432016` / `@OneGBEthiopia` (`CBE: 1000212746367 | Telebirr: 0925432016`)
+            ## 👑 ሮያል ቢንጎ ፕሮ (Royal Bingo Pro 500) — Enterprise Edition v2.0.0
+            - **💻 የኮምፒውተር ሶፍትዌር (`.EXE` v2.0.0)**: `RoyalBingoPro_Setup_v2.0.0.exe` / `RoyalBingoPro_Setup.exe`
+            - **📱 የስልክ 500-ካርቴላ እና Admin CRM መተግበሪያ (`.APK` v2.0.0)**: `RoyalBingoPro_500Cartela_v2.0.0.apk`
+            - **📦 Google Play Bundle (`.AAB` v2.0.0)**: `RoyalBingoPro_500Cartela_v2.0.0.aab`
           files: |
+            release-assets/RoyalBingoPro_Setup_v2.0.0.exe
             release-assets/RoyalBingoPro_Setup.exe
-            release-assets/RoyalBingoPro_Setup_v1.0.0.exe
+            release-assets/RoyalBingoPro_500Cartela_v2.0.0.apk
             release-assets/RoyalBingoPro_500Cartela_v1.0.0.apk
-            release-assets/RoyalBingoPro_500Cartela_v1.0.0.aab
+            release-assets/RoyalBingoPro_500Cartela_v2.0.0.aab
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
